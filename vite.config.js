@@ -13,4 +13,5 @@ export default defineConfig({
       '@services': path.resolve(__dirname, 'src/services'),
     },
   },
+  base:'/Supping/'
 });
