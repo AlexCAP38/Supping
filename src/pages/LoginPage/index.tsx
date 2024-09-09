@@ -1,67 +1,82 @@
-import React, {useEffect} from 'react';
-import block from 'bem-cn-lite';
-import {UserLabel, Button, Modal, TextInput} from '@gravity-ui/uikit';
-import {Plus} from '@gravity-ui/icons';
+import React, {useEffect, useState} from 'react';
 import monkey from '@assets/monkey.gif';
-import {getUsers} from '@services/api'
+import cat from '@assets/cat.gif';
+import block from 'bem-cn-lite';
+import {UserLabel, Button} from '@gravity-ui/uikit';
+import {ModalNewUser} from './components/Modal';
+import {Plus} from '@gravity-ui/icons';
+import {
+  getUsers,
+  IUsers,
+  setUserActive
+} from '@services/api';
 import './LoginPage.scss';
 
 const b = block('container');
 
 export function LoginPage() {
+  const [users, setUsers] = useState<IUsers[]>([]);
+  const [showModalAddUser, setShowModalAddUser] = useState(false);
 
   useEffect(() => {
-    getUsers();
+    getUsers().then((data) => {
+      setUsers(data)
+    })
   }, []);
 
-  function handleClick() {
+  useEffect(() => {
+  }, [users,showModalAddUser]);
 
+  async function handleActiveUser(user: IUsers) {
+    if (user.active) {
+      // добавить логику для деактивации пользователя, если это требуется
+    } else {
+      try {
+        await setUserActive(user.id);
+        const updatedUsers = await getUsers();
+        setUsers(updatedUsers);
+      } catch (error) {
+        //можно добавить модалку с ошибкой
+        console.error('Ошибка при активации пользователя:', error);
+      }
+    }
+  }
+
+  function handleAddUser() {
+    setShowModalAddUser(true);
   }
 
   return (
     <div className={b()}>
-      <UserLabel
-        className={b('card')}
-        type='person'
-        avatar={monkey}
-        children='Евгений Никитин'
-        size='xl'
-      />
-      <UserLabel
-        className={b('card')}
-        type='person'
-        avatar={monkey}
-        children='Евгений Никитин'
-        size='xl'
-      />
-
-      <Modal open={true} className={b('modal-new-user')}>
-        <TextInput
-          size='l'
-          type='text'
-          placeholder='Имя'
-        />
-        <TextInput
-          size='l'
-          type='text'
-          placeholder='Фамилия'
-        />
-        <TextInput
-          size='l'
-          type='text'
-          placeholder='Логин'
-        />
-      </Modal>
-
+      {users.map((user) => {
+        return (
+          <UserLabel
+            key={user.id}
+            className={b('card', {active: !user.active ? true : false})}
+            type='person'
+            avatar={user.active ? monkey : cat}
+            size='xl'
+            onClick={() => {handleActiveUser(user)}}
+          >
+            {user.firstName === user.lastName ?
+              `${user.firstName}` :
+              `${user.firstName} ${user.lastName}`}
+          </UserLabel>
+        )
+      })}
 
       <Button
-        onClick={handleClick}
+        onClick={handleAddUser}
         pin="circle-circle"
         selected
         className={b('btn-add-user')}>
         <Plus />
       </Button>
 
+      <ModalNewUser
+        showModal={showModalAddUser}
+        closeModal={()=>setShowModalAddUser(false)}
+      />
     </div>
   );
 }  
