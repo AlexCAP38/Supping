@@ -4,30 +4,38 @@ import cat from '@assets/cat.gif';
 import block from 'bem-cn-lite';
 import {UserLabel, Button} from '@gravity-ui/uikit';
 import {ModalNewUser} from './components/Modal';
-import {Plus} from '@gravity-ui/icons';
+import {Plus, ArrowUturnCcwLeft} from '@gravity-ui/icons';
 import {
   getUsers,
-  IUsers,
+  IUser,
   setUserActive
 } from '@services/api';
 import './LoginPage.scss';
+import {useNavigate} from 'react-router-dom';
 
 const b = block('container');
 
 export function LoginPage() {
-  const [users, setUsers] = useState<IUsers[]>([]);
+  const [users, setUsers] = useState<IUser[]>([]);
   const [showModalAddUser, setShowModalAddUser] = useState(false);
+  const navigate = useNavigate();
+
+//TODO Оптимизировать количество обращений Хранить данные в контексте 
 
   useEffect(() => {
-    getUsers().then((data) => {
-      setUsers(data)
-    })
+    getUsers()
+      .then((data) => {
+        setUsers(data);
+      })
+      .catch(() => {
+        console.log('ВКЛючи СЕРВЕР');
+      })
   }, []);
 
   useEffect(() => {
-  }, [users,showModalAddUser]);
+  }, [users, showModalAddUser]);
 
-  async function handleActiveUser(user: IUsers) {
+  async function handleActiveUser(user: IUser) {
     if (user.active) {
       // добавить логику для деактивации пользователя, если это требуется
     } else {
@@ -45,6 +53,10 @@ export function LoginPage() {
   function handleAddUser() {
     setShowModalAddUser(true);
   }
+function handleBackPage() {
+
+  navigate(-1);
+}
 
   return (
     <div className={b()}>
@@ -66,6 +78,14 @@ export function LoginPage() {
       })}
 
       <Button
+        onClick={handleBackPage}
+        // pin="circle-circle"
+        selected
+      >
+        <ArrowUturnCcwLeft />
+      </Button>
+
+      <Button
         onClick={handleAddUser}
         pin="circle-circle"
         selected
@@ -75,7 +95,7 @@ export function LoginPage() {
 
       <ModalNewUser
         showModal={showModalAddUser}
-        closeModal={()=>setShowModalAddUser(false)}
+        closeModal={() => setShowModalAddUser(false)}
       />
     </div>
   );

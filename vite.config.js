@@ -13,5 +13,16 @@ export default defineConfig({
       '@services': path.resolve(__dirname, 'src/services'),
     },
   },
-  base:'/Supping/'
+  base:'/Supping/',
+
+  // build: {
+  //   rollupOptions: {
+  //     output: {
+  //       assetFileNames: 'Supping/[name].[hash][extname]',
+  //       entryFileNames: 'Supping/[name].[hash].js',
+  //       chunkFileNames: 'Supping/[name].[hash].js',
+  //     }
+  //   }
+  // }
+
 });

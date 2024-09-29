@@ -7,9 +7,10 @@ body {
 }
 
 #app {
-  padding: 2px;
+  // padding: 2px;
+  // border: 1px solid red;
   box-sizing: border-box;
-  border: 1px solid red;
   max-width: 425px;
+  height: 100vh;
   margin: auto;
 }
