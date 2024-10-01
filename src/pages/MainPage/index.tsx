@@ -3,13 +3,14 @@ import block from 'bem-cn-lite';
 import './MainPage.scss';
 import {Footer} from './components/Footer';
 import {Item} from './components/Item';
-import {getUsers, IUser, IItem, getItems} from '@services/api';
+import {getUsers, getItems} from '@services/api';
+import {User, Item as IItem} from '@services/types';
 import {Spin} from '@gravity-ui/uikit';
 
 const b = block('container');
 
 export function MainPage() {
-  const [userList, setUserList] = useState<IUser[]>([]);
+  const [userList, setUserList] = useState<User[]>([]);
   const [itemList, setItemList] = useState<IItem[]>([]);
 
   useEffect(() => {

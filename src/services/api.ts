@@ -1,13 +1,13 @@
 const URL = import.meta.env.VITE_API_URL;
 
-export interface IUser {
-    id: string,
-    firstName: string,
-    lastName: string,
-    active: boolean
-}
+import {
+    RentList,
+    User,
+    NewUser,
+    Item
+} from "./types";
 
-export const getUsers = (): Promise<IUser[]> => {
+export const getUsers = (): Promise<User[]> => {
     return fetch(`${URL}/v1/users/list`, {
         method: 'POST',
         headers: {
@@ -26,13 +26,7 @@ export const getUsers = (): Promise<IUser[]> => {
     })
 }
 
-interface INewUser {
-    firstName: string,
-    lastName: string,
-    login: string
-}
-
-export const createUser = (user: INewUser) => {
+export const createUser = (user: NewUser) => {
     return fetch(`${URL}/v1/users`, {
         method: 'POST',
         headers: {
@@ -42,7 +36,7 @@ export const createUser = (user: INewUser) => {
     })
 }
 
-export const setUserActive = (id: string): Promise<IUser> => {
+export const setUserActive = (id: string): Promise<User> => {
     return fetch(`${URL}/v1/users/active/${id}`, {
         method: 'POST',
         headers: {
@@ -53,24 +47,7 @@ export const setUserActive = (id: string): Promise<IUser> => {
     })
 }
 
-export type IItem = {
-    id: string,
-    number: number,
-    name: string,
-    description: string,
-    type: {
-        id: string,
-        name: string,
-        cost: number,
-        description: string
-    },
-    status: string,
-    volt: number,
-    lowEnergy: boolean,
-    image: string
-}
-
-export const getItems = (): Promise<IItem[]> => {
+export const getItems = (): Promise<Item[]> => {
     return fetch(`${URL}/v1/items/list`, {
         method: 'POST',
         headers: {
@@ -82,6 +59,28 @@ export const getItems = (): Promise<IItem[]> => {
                     field: 'id',
                     direction: 'ASC'
                 }
+            }
+        )
+    }).then((response) => {
+        if (response.ok) return response.json()
+    })
+}
+
+export const getRentList = (): Promise<RentList> => {
+    return fetch(`${URL}/v1/rents/list`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(
+            {
+                sort: {
+                    field: "id",
+                    direction: "ASC"
+                },
+                // search: "string",
+                page: 0,
+                size: 0
             }
         )
     }).then((response) => {
