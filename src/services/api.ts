@@ -67,20 +67,20 @@ export const getItems = (): Promise<Item[]> => {
 }
 
 export const getRentList = (): Promise<RentList> => {
-    return fetch(`${URL}/v1/rents/list`, {
+    return fetch(`${URL}/v1/rents/list/`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify(
             {
-                sort: {
-                    field: "id",
-                    direction: "ASC"
-                },
-                // search: "string",
+                // сортировка пока не нужна
+                // sort: {
+                //     field: "id",
+                //     direction: "ASC"
+                // },
                 page: 0,
-                size: 0
+                size: 10
             }
         )
     }).then((response) => {

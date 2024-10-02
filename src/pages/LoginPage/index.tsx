@@ -5,22 +5,19 @@ import block from 'bem-cn-lite';
 import {UserLabel, Button} from '@gravity-ui/uikit';
 import {ModalNewUser} from './components/Modal';
 import {Plus, ArrowUturnCcwLeft} from '@gravity-ui/icons';
-import {
-  getUsers,
-  IUser,
-  setUserActive
-} from '@services/api';
+import {getUsers, setUserActive} from '@services/api';
+import {User} from '@services/types';
 import './LoginPage.scss';
 import {useNavigate} from 'react-router-dom';
 
 const b = block('container');
 
 export function LoginPage() {
-  const [users, setUsers] = useState<IUser[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [showModalAddUser, setShowModalAddUser] = useState(false);
   const navigate = useNavigate();
 
-//TODO Оптимизировать количество обращений Хранить данные в контексте 
+  //TODO Оптимизировать количество обращений Хранить данные в контексте 
 
   useEffect(() => {
     getUsers()
@@ -35,7 +32,7 @@ export function LoginPage() {
   useEffect(() => {
   }, [users, showModalAddUser]);
 
-  async function handleActiveUser(user: IUser) {
+  async function handleActiveUser(user: User) {
     if (user.active) {
       // добавить логику для деактивации пользователя, если это требуется
     } else {
@@ -53,10 +50,10 @@ export function LoginPage() {
   function handleAddUser() {
     setShowModalAddUser(true);
   }
-function handleBackPage() {
+  function handleBackPage() {
 
-  navigate(-1);
-}
+    navigate(-1);
+  }
 
   return (
     <div className={b()}>

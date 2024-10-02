@@ -5,6 +5,11 @@ $block: '.item-container';
     padding: 8px 0;
     display: flex;
     justify-content: space-between;
+    column-gap: 10px;
+}
+
+#{$block}:nth-of-type(2n+1) {
+background-color: #F4F4F4;
 }
 
 #{$block}__section-main {
@@ -23,9 +28,12 @@ $block: '.item-container';
 }
 
 #{$block}__section-info {
+    max-width: 210px;
+    width: 100%;
     display: flex;
     flex-direction: column;
-padding: 0 5px;
+    padding-left: 5px;
+    justify-content: space-between;
 }
 
 
@@ -38,26 +46,31 @@ padding: 0 5px;
     overflow: hidden;
 
     img {
-        width: 30px;
-        height: 30px;
+        margin-left: 5px;
+        width: 25px;
+        height: px;
     }
 
     div {
         display: flex;
         justify-content: end;
         border-bottom: 1px solid rgba(4, 177, 251, 1);
-
+        justify-content: space-between;
     }
 }
 
 #{$block}__id-item {
+    padding-left: 5px;
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     height: 44px;
     font-size: 16px;
     color: #303030;
     background-color: rgba(4, 177, 251, 1);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 #{$block}__summa {
@@ -79,9 +92,13 @@ padding: 0 5px;
 }
 
 #{$block}__name-item {
-margin-bottom: 10px;
-color: rgb(4, 177, 251);
-font-size: 16px;
+    max-height: 45px;
+    margin-bottom: 5px;
+    color: rgb(4, 177, 251);
+    font-size: 16px;
+    overflow: hidden;
+    overflow-wrap: break-word;
+    // text-overflow: ellipsis;
 }
 
 #{$block}__time {

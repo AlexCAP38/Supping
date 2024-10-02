@@ -7,27 +7,17 @@ import './Footer.scss';
 
 const b = block('footer-container');
 
-type FooterProps = {
-    userActive: string;
-}
+// type FooterProps = {
+//     userActive: string;
+// }
 
-export const Footer: FC<FooterProps> = ({userActive}) => {
-    const date = new Date(); // Текущая дата
+// export const Footer: FC<FooterProps> = ({userActive}) => {
+export const Footer: FC = () => {
 
-    const day = date.getDate(); // Получаем день
-    const month = date.getMonth() + 1; // Получаем месяц (нужно прибавить 1)
-    const year = date.getFullYear(); // Получаем год
 
     return (
         <Card className={b()}>
-            <Text className={b('text')}>{day}.{month}.{year}</Text>
-            {userActive ?
-                <Link to='/supping/user'>
-                    <Text className={b('text')}>{userActive}</Text>
-                </Link>
-                :
-                <Spin size="xs" />
-            }
+            <Text className={b('text')}>СДАТЬ</Text>
         </Card>
     )
 }

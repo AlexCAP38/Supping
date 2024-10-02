@@ -26,13 +26,25 @@ export type Item = {
         cost: number,
         description: string
     },
-    status: string,
+    status: StatusRent,
     volt: number,
     lowEnergy: boolean,
     image: string
 }
 
-export interface RentList  {
+export type RentItem = {
+    id: string,
+    item: Item,
+    status: StatusItem,
+    description: string,
+    startTime: string,
+    endTime: string,
+    rentTime: number,
+    rentCost: number,
+    createdAt: string
+}
+
+export interface RentList {
     activeUser: User,
     day: string,
     totalCost: number,
@@ -40,34 +52,7 @@ export interface RentList  {
         totalPages: number,
         totalElements: number,
         size: number,
-        content: [
-            {
-                id: string,
-                item: {
-                    id: string,
-                    number: number,
-                    name: string,
-                    description: string,
-                    type: {
-                        id: string,
-                        name: string,
-                        cost: number,
-                        description: string
-                    },
-                    status: StatusRent,
-                    volt: number,
-                    lowEnergy: boolean,
-                    image: string
-                },
-                status: StatusItem,
-                description: string,
-                startTime: string,
-                endTime: string,
-                rentTime: number,
-                rentCost: number,
-                createdAt: string
-            }
-        ],
+        content: [RentItem],
         number: number,
         sort: {
             empty: boolean,
