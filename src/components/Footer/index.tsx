@@ -13,7 +13,7 @@ export const Footer: FC = () => {
 
     const route = {
         mainpage: {
-            route: '/',
+            route: '/spping',
             action: 'СДАТЬ'
         },
         inventorypage: {
