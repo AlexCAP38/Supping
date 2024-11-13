@@ -22,15 +22,16 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
-    
+
     /*Alias*/
     "baseUrl": ".",
     "paths": {
       "@components/*": ["src/components/*"],
+      "@context/*": ["src/context/*"],
       "@pages/*": ["src/pages/*"],
       "@utils/*": ["src/utils/*"],
       "@assets/*": ["src/assets/*"],
-      "@services/*": ["src/services/*"]
+      "@services/*": ["src/services/*"],
     },
   },
   "include": ["src"]

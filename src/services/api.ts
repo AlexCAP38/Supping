@@ -4,7 +4,9 @@ import {
     RentList,
     User,
     NewUser,
-    Item
+    Item,
+    RentItem,
+    InventoryItem
 } from "./types";
 
 export const getUsers = (): Promise<User[]> => {
@@ -75,12 +77,50 @@ export const getRentList = (): Promise<RentList> => {
         body: JSON.stringify(
             {
                 // сортировка пока не нужна
-                // sort: {
-                //     field: "id",
-                //     direction: "ASC"
-                // },
+                sort: {
+                    field: "status",
+                    direction: "ASC"
+                },
                 page: 0,
-                size: 10
+                size: 1000
+            }
+        )
+    }).then((response) => {
+        if (response.ok) return response.json()
+    })
+}
+
+export const getInventoryList = (): Promise<InventoryItem[]> => {
+    return fetch(`${URL}/v1/items/list/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(
+            {
+                // сортировка пока не нужна
+                sort: {
+                    field: "status",
+                    direction: "ASC"
+                }
+            }
+        )
+    }).then((response) => {
+        if (response.ok) return response.json()
+    })
+}
+
+export const sendPayment = (id:string,description: string, paid: number): Promise<RentItem> => {
+    return fetch(`${URL}/v1/rents/${id}/status/pay/`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(
+            {
+
+                description: description,
+                paid: paid
             }
         )
     }).then((response) => {

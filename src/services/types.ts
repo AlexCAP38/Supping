@@ -1,5 +1,5 @@
 type StatusRent = 'HOME' | 'RENTED_OUT' | 'NO_ACTIVE' | 'DELETE';
-type StatusItem = 'NEW' | 'ERROR' | 'PAY' | 'NO_PAY' | 'DELETED' | 'DELETE_SHORT_TIME';
+export type StatusItem = 'NEW' | 'ERROR' | 'PAY' | 'NO_PAY' | 'DELETED' | 'DELETE_SHORT_TIME';
 
 
 export type User = {
@@ -41,6 +41,7 @@ export type RentItem = {
     endTime: string,
     rentTime: number,
     rentCost: number,
+    rentCostFact: number,
     createdAt: string
 }
 
@@ -52,7 +53,7 @@ export interface RentList {
         totalPages: number,
         totalElements: number,
         size: number,
-        content: [RentItem],
+        content: RentItem[],
         number: number,
         sort: {
             empty: boolean,
@@ -76,4 +77,22 @@ export interface RentList {
         },
         empty: boolean
     }
+}
+
+
+export type InventoryItem = {
+    id: string,
+    number: number,
+    name: string,
+    description: string,
+    type: {
+        id: string,
+        name: string,
+        cost: number,
+        description: string,
+    },
+    status: StatusRent,
+    volt: number,
+    lowEnergy: boolean,
+    image: string,
 }

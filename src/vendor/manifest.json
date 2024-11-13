@@ -1,5 +1,6 @@
 {
-    "name": "Supping",
-    "start_url": "/",
-    "display": "standalone"
-  }
+  "name": "Supping",
+  "start_url": "/supping/",
+  "lang": "ru-RU",
+  "display": "fullscreen"
+}

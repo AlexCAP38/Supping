@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
-import monkey from '@assets/monkey.gif';
-import cat from '@assets/cat.gif';
+import monkey from '@assets/users/monkey.gif';
+import cat from '@assets/users/cat.gif';
 import block from 'bem-cn-lite';
 import {UserLabel, Button} from '@gravity-ui/uikit';
 import {ModalNewUser} from './components/Modal';
@@ -17,7 +17,7 @@ export function LoginPage() {
   const [showModalAddUser, setShowModalAddUser] = useState(false);
   const navigate = useNavigate();
 
-  //TODO Оптимизировать количество обращений Хранить данные в контексте 
+  //TODO Оптимизировать количество обращений Хранить данные в контексте
 
   useEffect(() => {
     getUsers()
@@ -96,4 +96,4 @@ export function LoginPage() {
       />
     </div>
   );
-}  
+}

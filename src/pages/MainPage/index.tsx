@@ -1,51 +1,46 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useContext} from 'react';
 import block from 'bem-cn-lite';
-import './MainPage.scss';
-import {Footer} from './components/Footer';
-import {Header} from './components/Header'
-import {Item} from './components/Item';
-import {getUsers, getItems, getRentList} from '@services/api';
+import {Footer} from '@components/Footer';
+import {Header} from '@components/Header';
+// import {Item} from '../../components/RentItem';
+import {getUsers, getItems, getRentList, sendPayment} from '@services/api';
+import {MainContext} from '@context/Context';
 import {User, RentItem} from '@services/types';
-import {Spin} from '@gravity-ui/uikit';
+import {Loader} from '@gravity-ui/uikit';
+import {Outlet} from 'react-router';
+import './MainPage.scss';
 
-const b = block('container');
+const b = block('main-page');
 
 export function MainPage() {
+  const {state, setState} = useContext(MainContext);
+  const [showLoader, setShowLoader] = useState(true);
   const [activeUser, setActiveUser] = useState<User | ''>('');
-  const [rentItemsList, setRentItemsList] = useState<RentItem[]>([]);
+  const [timeUpdate, setTimeUpdate] = useState(10000);
 
-  useEffect(() => {
-
+  const fetchData = () => {
     getRentList()
       .then((data) => {
         setActiveUser(data.activeUser);
-        setRentItemsList(data.rents.content);
+        setState({rentItems: data.rents.content});
       })
       .catch(() => {
-        //TODO сделать модалку
-        console.log('не могу получить доступ к АПИ');
-      })
+        //TODO: добавить обработку ошибок (например, модальное окно)
+        console.log('Не удалось получить данные');
+      });
+  };
+
+  useEffect(() => {
+    fetchData();
+    const intervalId = setInterval(fetchData, timeUpdate);
+    return () => clearInterval(intervalId);
+  }, [timeUpdate]);
 
 
+  useEffect(() => {
+    setShowLoader(false);
+  }, [state]);
 
-    // getUsers()
-    //   .then((data) => {
-    //     setUserList(data);
-    //   })
-    //   .catch(() => {
-    //     //TODO сделать модалку
-    //     console.log('не могу получить доступ к АПИ');
-    //   })
-    // getItems()
-    //   .then((data) => {
-    //     setItemList(data);
-    //   })
-    //   .catch(() => {
-    //     //TODO сделать модалку
-    //     console.log('не могу получить доступ к АПИ');
-    //   })
-
-  }, []);
 
   function returnActiveUser() {
     if (activeUser) {
@@ -57,16 +52,12 @@ export function MainPage() {
   }
 
   return (
-    <>
+    <div className={b()}>
       <Header userActive={returnActiveUser()} />
-      {rentItemsList.length === 0
-        //TODO сюда сделать нормальную модалку
-        ? <Spin size='xl' />
-        : rentItemsList.map((item) => (
-          <Item key={item.id} rentItem={item} />
-        ))
-      }
+      {showLoader
+        ? <Loader size='l' className={b('loader')} />
+        : <Outlet />}
       <Footer />
-    </>
+    </div>
   );
 }

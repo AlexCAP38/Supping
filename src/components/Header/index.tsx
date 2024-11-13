@@ -5,7 +5,7 @@ import {Button, Card, Modal, Text, Spin} from '@gravity-ui/uikit';
 
 import './Header.scss';
 
-const b = block('header-container');
+const b = block('header');
 
 type HeaderProps = {
     userActive: string;
@@ -22,7 +22,7 @@ export const Header: FC<HeaderProps> = ({userActive}) => {
         <Card className={b()}>
             <Text className={b('text')}>{day}.{month}.{year}</Text>
             {userActive ?
-                <Link className={b('link')} to='/supping/user'>
+                <Link className={b('link')} to='/user'>
                     <Text className={b('text')}>{userActive}</Text>
                 </Link>
                 :
