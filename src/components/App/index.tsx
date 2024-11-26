@@ -12,11 +12,13 @@ export function App() {
     <MainProvider>
       <ThemeProvider theme="light">
         <Routes>
-          <Route path="/supping" element={<MainPage />}>
+          <Route path="/" element={<MainPage />}>
+          {/* <Route path="/supping" element={<MainPage />}> */}
             <Route index element={<RentPage />} />
             <Route path="inventory" element={<InventoryPage />} />
           </Route>
-          <Route path="/supping/user" element={<LoginPage />} />
+          <Route path="/user" element={<LoginPage />} />
+          {/* <Route path="/supping/user" element={<LoginPage />} /> */}
           {/* <Route path="/" element={<Wrapper />}>
                         <Route path="" index element={<IndexPage />} />
                         <Route path="/login" element={<Login />}></Route>

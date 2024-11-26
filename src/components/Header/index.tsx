@@ -21,6 +21,7 @@ export const Header: FC<HeaderProps> = ({userActive}) => {
     return (
         <Card className={b()}>
             <Text className={b('text')}>{day}.{month}.{year}</Text>
+            <button className={b('status-btn')}></button>
             {userActive ?
                 <Link className={b('link')} to='/user'>
                     <Text className={b('text')}>{userActive}</Text>

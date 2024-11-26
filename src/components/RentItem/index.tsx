@@ -10,9 +10,8 @@ import {sendPayment} from "@services/api";
 import {MainContext} from "@context/Context";
 
 import './RentItem.scss';
-import {state} from "lit/decorators.js";
 
-const b = block('item-container');
+const b = block('rent-item-container');
 
 interface IItemProps {
     rentItem: RItem;

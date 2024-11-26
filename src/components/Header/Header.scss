@@ -22,3 +22,10 @@ $block: '.header';
 #{$block}__link {
     text-decoration: none;
 }
+
+#{$block}__status-btn {
+    border-radius: 50% 50%;
+    width: 25px;
+    height: 25px;
+    border: 0;
+}

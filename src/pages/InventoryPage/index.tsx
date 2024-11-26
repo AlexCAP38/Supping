@@ -1,7 +1,9 @@
 import React, {useContext, useEffect, useState} from 'react';
 import block from 'bem-cn-lite';
-import {UserLabel, Button, Modal, Text, TextArea, TextInput} from '@gravity-ui/uikit';
+import {UserLabel, Button, Modal, Text, TextArea, TextInput, Icon} from '@gravity-ui/uikit';
+import {TrashBin, CirclePlusFill, ArrowRotateRight, Person, PersonXmark, PlayFill} from '@gravity-ui/icons';
 import {MainContext} from '@context/Context';
+import {Item} from '@components/Item';
 
 import './InventoryPage.scss';
 import {getInventoryList} from '@services/api';
@@ -33,15 +35,7 @@ export function InventoryPage() {
       </div>
       {
         inventoryItems.map((item) => (
-          <div className={b('item')} key={item.id}>
-            <div className='name'>{item.name}</div>
-            <div>
-              <div className='number'>{item.number}</div>
-            </div>
-            <div>{item.type.cost}</div>
-            <div>{item.type.cost}</div>
-            <div>{item.type.cost}</div>
-          </div>
+          <Item item={item} />
         ))
       }
     </div>
