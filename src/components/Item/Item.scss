@@ -43,36 +43,89 @@ $block: '.item-container';
         border: 0;
         display: flex;
         justify-content: flex-start;
-        padding-left: 5px;
+        align-items: flex-end;
+        padding-left: 4px;
+        padding-bottom: 6px;
         box-sizing: border-box;
+        overflow: hidden;
+
+        .first {
+            font-size: 22px;
+            letter-spacing: -1px;
+        }
+
+        .second {
+            font-size: 14px;
+            line-height: 12px;
+            margin-left: 2px;
+        }
     }
 }
 
 
 #{$block}__item-detail {
 
-
     .g-modal__content {
         display: flex;
         flex-direction: column;
-        width: 400px;
-        // height: 600px;
-        // justify-content: center;
+        width: 350px;
         align-items: center;
-        padding: 30px 0;
+        border: 1px solid #000;
     }
 
-    img {
-        width: 200px;
+    .container-title {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+
+        .item-title {
+            font-size: 24px;
+            color: $color-blue;
+            margin: 8px 0 0 13px;
+        }
+
+        .invent-number {
+            background-color: $color-blue;
+            width: 110px;
+            height: 50px;
+            border-bottom-left-radius: 10px;
+            display: flex;
+            align-items: flex-end;
+            padding-left: 10px;
+            padding-bottom: 10px;
+            box-sizing: border-box;
+
+            .first {
+                font-size: 36px;
+                letter-spacing: -1px;
+                color: $color-black;
+            }
+
+            .second {
+                color: $color-black;
+                font-size: 20px;
+                line-height: 7px;
+                margin-left: 2px;
+                letter-spacing: 1px;
+            }
+        }
     }
-}
 
-#{$block}__modal-comment {
-    width: 230px;
-    height: 100px;
-}
+    .item-image {
+        width: 100%;
+        margin-top: 12px;
+        border: 1px solid #000;
+    }
 
-#{$block}__item-btn {
-    margin-top: 20px;
-    font-size: 24px;
+    .btn-rent {
+        width: 100%;
+        height: 50px;
+        margin-top: 50px;
+        background-color: $color-blue;
+        color: #fff;
+        font-size: 34px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
 }

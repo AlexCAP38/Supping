@@ -102,7 +102,7 @@ export const RentItem: FC<IItemProps> = ({rentItem}) => {
 
         sendPayment(rentItem.id, inputDescription, Number(inputGetMoney))
             .then((data) => {
-                setState({rentItems:returnNewItemsList(data)})
+                setState({rentItems: returnNewItemsList(data)})
                 setIsLoad(false)
                 setVisibilityModal(false);
             })
@@ -118,7 +118,7 @@ export const RentItem: FC<IItemProps> = ({rentItem}) => {
                 <div className={b('section-info')}>
                     <img className={b('item-image')} src={item.image ? item.image : Photo} />
                     <div className={b('section-title')}>
-                        <Text className={b('name-item')}>{item.name}</Text>
+                        <Text className={b('name-item')}>{item.description}</Text>
                         <Text className={b('time')}>
                             {`${timeRent.start} - ${timeRent.end} = ${timeRent.total}`}</Text>
                     </div>
@@ -126,7 +126,12 @@ export const RentItem: FC<IItemProps> = ({rentItem}) => {
                 <div className={b('section-price', `${checkStatus(status)}`)}
                     onClick={(event) => setVisibilityModal(true)}
                 >
-                    <Text className={b('id-item')}>{item.number}</Text>
+                    <Text className={b('id-item')}>
+                        <div className='number'>
+                            <span className="first">{item.name.slice(0, 2)}</span>
+                            <span className="second">{item.name.slice(2, -1)}</span>
+                        </div>
+                    </Text>
                     <div className={b('separator')}></div>
                     <div className={b('row-container')}>
                         <img src={wallet} />

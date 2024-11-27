@@ -97,7 +97,25 @@ $block: '.rent-item-container';
 #{$block}__id-item {
     margin: 16px 0 0 8px;
     color: $color-black;
-    font-size: 34px;
+
+    .number {
+        display: flex;
+        justify-content: flex-start;
+        align-items: flex-end;
+        box-sizing: border-box;
+
+        .first {
+            font-size: 28px;
+        }
+
+        .second {
+            font-size: 18px;
+            line-height: 11px;
+            margin-left: 2px;
+            letter-spacing: 0.4px;
+
+        }
+    }
 }
 
 #{$block}__separator {

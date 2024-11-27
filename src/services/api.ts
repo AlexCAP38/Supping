@@ -127,3 +127,15 @@ export const sendPayment = (id:string,description: string, paid: number): Promis
         if (response.ok) return response.json()
     })
 }
+
+
+export const setRentItem = (id:string): Promise<InventoryItem> => {
+    return fetch(`${URL}/v1/rents/${id}/status/start/`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }).then((response) => {
+        if (response.ok) return response.json()
+    })
+}

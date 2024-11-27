@@ -1,10 +1,9 @@
 import React, {FC, useState} from "react";
 import block from 'bem-cn-lite';
-import {TrashBin, CirclePlusFill, ArrowRotateRight, Person, PersonXmark, PlayFill, CircleMinusFill, PencilToSquare} from '@gravity-ui/icons';
-import {Text, Modal, TextArea, TextInput, Button, UserLabel, Icon} from '@gravity-ui/uikit';
+import {Text, Modal} from '@gravity-ui/uikit';
 import anyPictures from '@assets/test.jpg'
 import {InventoryItem} from "@services/types";
-
+import {setRentItem} from "@services/api";
 
 import './Item.scss';
 
@@ -21,16 +20,22 @@ export const Item: FC<IItemProps> = ({item}) => {
 
     function handleClick() {
         setShowModal(true)
+    }
 
+    function onSubmit() {
+        setRentItem(item.id).then(()=>{setShowModal(false)});
     }
 
     return (
 
-        <div className={b('item')} key={item.id} onClick={()=>{handleClick()}}>
+        <div className={b('item')} key={item.id} onClick={() => {handleClick()}}>
 
-            <div className='name'>{item.name}</div>
+            <div className='name'>{item.description}</div>
             <div>
-                <div className='number'>{item.number}</div>
+                <div className='number'>
+                    <span className="first">{item.name.slice(0, 2)}</span>
+                    <span className="second">{item.name.slice(2, -1)}</span>
+                </div>
             </div>
             <div>{item.type.cost}</div>
             <div>{item.type.cost}</div>
@@ -48,51 +53,15 @@ export const Item: FC<IItemProps> = ({item}) => {
                 }}
                 style={{backgroundColor: 'rgba(20,20,20, 0.15)'}}
             >
-                <Text variant='display-2'>{item.name}</Text>
-                <Text variant='header-1'>{item.number}</Text>
-                <Text variant='body-2'>{item.type.cost}</Text>
-                <img src={anyPictures} alt="" />
-                <Button className={b('item-btn')}>
-                    <Icon data={CirclePlusFill} size={20} />
-                    добавить изображени
-                </Button>
-                <Button className={b('item-btn')}>
-                    <Icon data={PencilToSquare} size={20} />
-                    изменить  изображени
-                </Button>
-                <Button className={b('item-btn')}>
-                    <Icon data={CircleMinusFill} size={20} />
-                    удалить  изображени
-                </Button>
-
-                <TextArea value='----------- эТО просто разделить '>
-
-                </TextArea>
-
-                <Button className={b('item-btn')}>
-                    <Icon data={PlayFill} size={20} />
-                    СДАТЬ
-                </Button>
-                <Button className={b('item-btn')}>
-                    <Icon data={Person} size={20} />
-                    ВКЛЮЧИТЬ
-                </Button>
-                <Button className={b('item-btn')}>
-                    <Icon data={PersonXmark} size={20} />
-                    ОТКЛЮЧИТЬ
-                </Button>
-                <Button className={b('item-btn')}>
-                    <Icon data={ArrowRotateRight} size={20} />
-                    ОБНОВИТЬ
-                </Button>
-                <Button className={b('item-btn')}>
-                    <Icon data={CirclePlusFill} size={20} />
-                    СОЗДАТЬ
-                </Button>
-                <Button className={b('item-btn')}>
-                    <Icon data={TrashBin} size={20}/>
-                    УДАЛИТЬ
-                </Button>
+                <div className="container-title">
+                    <Text className={'item-title'}>{item.description}</Text>
+                    <div className={'invent-number'}>
+                        <span className="first">{item.name.slice(0, 2)}</span>
+                        <span className="second">{item.name.slice(2, -1)}</span>
+                    </div>
+                </div>
+                <img src={anyPictures} className={'item-image'} />
+                <div className="btn-rent" onClick={onSubmit}>СДАТЬ</div>
             </Modal>
 
 
