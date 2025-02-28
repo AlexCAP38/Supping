@@ -1,30 +1,25 @@
-import React, {ReactNode, useState, createContext, useCallback} from 'react';
-import {Context, State} from './type';
+import {InventoryItem, RentItem} from '@services/types';
+import {ApiItemTypeResponse} from '@services/supping-api';
+import {createContext} from 'react';
 
-//TODO когда будет АПИ поставить пустышку initialStateProfile
-const defaultState: Context = {
+export interface Context {
+    state: State;
+    setState: (newState: Partial<State>) => void;
+}
+
+export interface State {
+    rentItems: RentItem[];
+    inventoryItems: InventoryItem[];
+    itemTypes: ApiItemTypeResponse[]
+};
+
+export const defaultState: Context = {
     state: {
         rentItems: [],
         inventoryItems:[],
+        itemTypes:[],
     },
     setState: () => { },
 }
 
-export const MainContext = createContext<Context>(defaultState);
-
-export const MainProvider: React.FC<{children: ReactNode}> = ({children}) => {
-    const [state, setState] = useState<State>(defaultState.state);
-
-    const updateState = useCallback((newState: Partial<State>) => {
-        setState(prevState => ({
-            ...prevState,
-            ...newState,
-        }));
-    }, []);
-
-    return (
-        <MainContext.Provider value={{state, setState: updateState}}>
-            {children}
-        </MainContext.Provider>
-    );
-};
+export const AppContext = createContext<Context>(defaultState);

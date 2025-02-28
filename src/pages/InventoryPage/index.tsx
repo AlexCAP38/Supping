@@ -1,17 +1,14 @@
-import React, {useContext, useEffect, useState} from 'react';
-import block from 'bem-cn-lite';
-import {UserLabel, Button, Modal, Text, TextArea, TextInput, Icon} from '@gravity-ui/uikit';
-import {TrashBin, CirclePlusFill, ArrowRotateRight, Person, PersonXmark, PlayFill} from '@gravity-ui/icons';
-import {MainContext} from '@context/Context';
-import {Item} from '@components/Item';
-
 import './InventoryPage.scss';
+import block from 'bem-cn-lite';
+import React, {useContext, useEffect, useState} from 'react';
+import {AppContext} from '@context/Context';
+import {Item} from '@components/Item';
 import {getInventoryList} from '@services/api';
 
 const b = block('inventory');
 
 export function InventoryPage() {
-  const {state: {inventoryItems}, setState} = useContext(MainContext);
+  const {state: {inventoryItems}, setState} = useContext(AppContext);
 
   useEffect(() => {
     getInventoryList()

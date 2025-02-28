@@ -1,16 +1,13 @@
-import React, {useContext, useEffect, useState} from 'react';
-import block from 'bem-cn-lite';
-import {UserLabel, Button, Modal, Text, TextArea, TextInput} from '@gravity-ui/uikit';
-import {MainContext} from '@context/Context';
-import {RentItem} from '@components/RentItem';
-
 import './RentPage.scss';
-
+import block from 'bem-cn-lite';
+import React, {useContext, useEffect, useState} from 'react';
+import {AppContext} from '@context/Context';
+import {RentItem} from '@components/RentItem';
 
 const b = block('rent-page');
 
 export function RentPage() {
-  const {state: {rentItems}, setState} = useContext(MainContext);
+  const {state: {rentItems}, setState} = useContext(AppContext);
 
   return (
     <div className={b()}>

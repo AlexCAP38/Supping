@@ -1,0 +1,44 @@
+$block: '.admin-page';
+
+#{$block} {
+    width: 100%;
+    padding: 30px 30px;
+    display: flex;
+    flex-direction: row;
+    gap: 50px;
+
+    #{$block}__loader {
+        display: flex;
+        justify-content: center;
+        margin-top: 200px;
+    }
+
+    #{$block}__table-inventory {
+        width: 1000px;
+        display: flex;
+        flex-direction: column;
+
+        #{$block}__table-title {
+            width: 100%;
+            display: block;
+            text-align: center;
+            background-color: rgb(200, 200, 200);
+        }
+
+        #{$block}__columns-name {
+            width: 100%;
+            background-color: rgb(200, 200, 200);
+
+            div {
+                justify-self: center;
+                align-self: center;
+                text-align: center;
+            }
+        }
+
+        .grid-table-inventory {
+            display: grid;
+            grid-template-columns: 100px repeat(6, 1fr);
+        }
+    }
+}

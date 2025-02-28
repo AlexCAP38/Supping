@@ -1,6 +1,6 @@
 # Коммерческие проект "Административная панель"
 
-Стек: HTML, SCSS, TS, Webpack
+Стек: HTML, SCSS, TS, Vite
 
 Структура проекта:
 - src/ — исходные файлы проекта
@@ -27,10 +27,4 @@ npm run start
 
 ```
 npm run build
-```
-
-## Запуск Storybook
-
-```
-npm run storybook
 ```

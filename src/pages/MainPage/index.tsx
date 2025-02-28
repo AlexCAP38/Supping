@@ -1,19 +1,18 @@
-import React, {useEffect, useState, useContext} from 'react';
+import './MainPage.scss';
 import block from 'bem-cn-lite';
+import React, {useEffect, useState, useContext} from 'react';
+import {Outlet} from 'react-router';
+import {Loader} from '@gravity-ui/uikit';
 import {Footer} from '@components/Footer';
 import {Header} from '@components/Header';
-// import {Item} from '../../components/RentItem';
-import {getUsers, getItems, getRentList, sendPayment} from '@services/api';
-import {MainContext} from '@context/Context';
-import {User, RentItem} from '@services/types';
-import {Loader} from '@gravity-ui/uikit';
-import {Outlet} from 'react-router';
-import './MainPage.scss';
+import {getRentList} from '@services/api';
+import {User} from '@services/types';
+import {AppContext} from '@context/Context';
 
 const b = block('main-page');
 
 export function MainPage() {
-  const {state, setState} = useContext(MainContext);
+  const {state, setState} = useContext(AppContext);
   const [showLoader, setShowLoader] = useState(true);
   const [activeUser, setActiveUser] = useState<User | ''>('');
   const [timeUpdate, setTimeUpdate] = useState(10000);
@@ -40,7 +39,6 @@ export function MainPage() {
   useEffect(() => {
     setShowLoader(false);
   }, [state]);
-
 
   function returnActiveUser() {
     if (activeUser) {

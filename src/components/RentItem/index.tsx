@@ -1,5 +1,6 @@
-import React, {FC, useContext, useEffect, useState} from "react";
+import './RentItem.scss';
 import block from 'bem-cn-lite';
+import React, {FC, useContext, useEffect, useState} from "react";
 import {Text, Modal, TextArea, TextInput, Button} from '@gravity-ui/uikit';
 import noPhoto from '@assets/no-photo.svg';
 import Photo from '@assets/test.jpg';
@@ -7,9 +8,7 @@ import battery from '@assets/Battery_low.svg';
 import wallet from '@assets/wallet.png';
 import {RentItem as RItem, StatusItem} from "@services/types";
 import {sendPayment} from "@services/api";
-import {MainContext} from "@context/Context";
-
-import './RentItem.scss';
+import {AppContext} from '@context/Context';
 
 const b = block('rent-item-container');
 
@@ -25,7 +24,7 @@ type TimeRent = {
 }
 
 export const RentItem: FC<IItemProps> = ({rentItem}) => {
-    const {state: {rentItems}, setState} = useContext(MainContext);
+    const {state: {rentItems}, setState} = useContext(AppContext);
     const {item, startTime, endTime, rentTime, rentCost, status, description, item: {lowEnergy}, rentCostFact} = rentItem;
 
     const formatter = new Intl.NumberFormat('ru-RU', {

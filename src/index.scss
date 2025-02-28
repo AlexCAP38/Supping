@@ -4,15 +4,15 @@
 
 @font-face {
   font-family: 'Bebas';
+  font-weight: normal;
   src: url('./assets/fonts/Bebas-Neue.woff') format('woff'),
     url('./assets/fonts/Bebas-Neue.ttf') format('ttf'),
     url('./assets/fonts/Bebas-Neue.woff2') format('woff2');
-  font-weight: normal;
 }
 
 
-body {
-  font-family: "Bebas", sans-serif !important;
-  width: 100%;
-  box-sizing: border-box;
-}
+// body {
+//   font-family: "Bebas", sans-serif;
+//   width: 100%;
+//   box-sizing: border-box;
+// }

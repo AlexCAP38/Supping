@@ -23,7 +23,7 @@ export const Header: FC<HeaderProps> = ({userActive}) => {
             <Text className={b('text')}>{day}.{month}.{year}</Text>
             <button className={b('status-btn')}></button>
             {userActive ?
-                <Link className={b('link')} to='/user'>
+                <Link className={b('link')} to='/users'>
                     <Text className={b('text')}>{userActive}</Text>
                 </Link>
                 :
