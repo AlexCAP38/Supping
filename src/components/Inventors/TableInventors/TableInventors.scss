@@ -1,14 +1,15 @@
-$block: '.table-stock';
+$block: '.table-inventors';
 
 #{$block} {
-    width: 700px;
+    width: 1000px;
     display: flex;
     flex-direction: column;
+    padding: 60px;
 
     #{$block}__loader {
         display: flex;
         justify-content: center;
-        margin-top: 100px;
+        margin-top: 200px;
     }
 
     #{$block}__table-title {
@@ -29,17 +30,8 @@ $block: '.table-stock';
         }
     }
 
-    #{$block}__table-stock-btn {
-        margin-top: 20px;
-        opacity: 0.3;
-    }
-
-    #{$block}__table-stock-btn:hover {
-        opacity: 1;
-    }
-
-    .grid-table-stock {
+    .grid-table-inventors {
         display: grid;
-        grid-template-columns: 100px repeat(4, 1fr);
+        grid-template-columns: 100px repeat(6, 1fr);
     }
 }

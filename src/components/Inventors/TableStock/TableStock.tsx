@@ -9,6 +9,7 @@ import {api} from '@services/api';
 
 const b = block('table-stock');
 
+
 export function TableStock() {
     //Список элементов
     const [itemsStock, setItemsStock] = useState<ApiStockResponse[]>([]);

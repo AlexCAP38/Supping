@@ -9,6 +9,9 @@ import {
   RentPage,
   InventoryPage
 } from '@pages/index';
+import {TableInventors} from '@components/Inventors/TableInventors/TableInventors';
+import {TableStock} from '@components/Inventors/TableStock/TableStock';
+import {TableTypes} from '@components/Inventors/TableTypes/TableTypes';
 
 export function App() {
   const [state, setState] = useState<State>(defaultState.state);
@@ -29,7 +32,12 @@ export function App() {
             <Route path="inventory" element={<InventoryPage />} />
           </Route>
           <Route path="/users" element={<LoginPage />} />
-          <Route path="/admin" element={<AdminPage />} />
+          <Route path="/admin" element={<AdminPage />} >
+            <Route index element={<TableInventors />} />
+            <Route path="inventors" element={<TableInventors />} />
+            <Route path="stocks" element={<TableStock />} />
+            <Route path="types" element={<TableTypes />} />
+          </Route>
         </Routes>
       </ThemeProvider>
     </AppContext.Provider>

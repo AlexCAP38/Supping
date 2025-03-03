@@ -1,17 +1,17 @@
-import React, {useEffect, useState} from 'react';
-import {Checkbox, Text} from '@gravity-ui/uikit';
-import {ApiItemResponse} from '@services/supping-api';
+import './ItemInventors.scss';
 import block from 'bem-cn-lite';
-import './Item.scss';
+import React from 'react';
+import {Checkbox} from '@gravity-ui/uikit';
+import {ApiItemResponse} from '@services/supping-api';
 
 const b = block('inventory-item');
 
-interface ItemProps {
+interface ItemInventorsProps {
   className: string;
   item: ApiItemResponse;
 }
 
-export function Item({className, item}: ItemProps) {
+export function ItemInventors({className, item}: ItemInventorsProps) {
 
   return (
     <div className={b('', className)}>

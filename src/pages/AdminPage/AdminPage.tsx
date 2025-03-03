@@ -1,55 +1,71 @@
 import './AdminPage.scss';
 import block from 'bem-cn-lite';
-import React, {useEffect, useState} from 'react';
-import {Text, Loader} from '@gravity-ui/uikit';
-import {Item} from './components/Item/Item';
-import {ApiItemResponse} from '@services/supping-api';
+import React, {useContext, useEffect, useState} from 'react';
+import {AsideHeader, MenuItem} from '@gravity-ui/navigation';
+import {ApiFilterRequest} from '@services/supping-api';
 import {api} from '@services/api';
-import {TableStock} from './components/TableStock/TableStock';
+import {AppContext} from '@context/Context';
+import logo from '@assets/favicon/sup.svg'
+import {Outlet, useNavigate} from 'react-router';
 
+//Опции сортировка по умолчанию
+export const sortOption: ApiFilterRequest = {
+  sort: {
+    field: 'name',
+    direction: 'ASC'
+  }
+}
 
 const b = block('admin-page');
 
 export function AdminPage() {
-  const [items, setItems] = useState<ApiItemResponse[]>([]);
-  const [showLoader, setShowLoader] = useState(false);
+  const navigation = useNavigate();
+  const {state, setState} = useContext(AppContext);
 
+  const menuItems: MenuItem[] = [
+    {
+      id: 'inventors',
+      title: 'Инвентарь',
+      onItemClick: () => navigation('inventors')
+    },
+    {
+      id: 'stocks',
+      title: 'Скидки / Акции',
+      onItemClick: () => navigation('stocks')
+    },
+    {
+      id: 'types',
+      title: 'Типы инвентаря',
+      onItemClick: () => navigation('types')
+    }
+  ]
 
   useEffect(() => {
-    setShowLoader(true)
-
-    //Можно добавить опции сортировки
-    api.v1.findAllByFilter3({})
+    //Получаем список типов инвентаря
+    api.v1.findAllByFilter4(sortOption)
       .then((response) => {
-        setItems(response.data)
-        setShowLoader(false);
+        setState({
+          itemTypes: response.data
+        })
       })
-      .catch((error) => console.log('Я б взял сервер на дуэль, да он уже сдался без боя!', error))
-
+      .catch((error) => console.log('Ошибка получения списка типов инвентаря', error))
   }, [])
 
   return (
     <div className={b()}>
+      <AsideHeader
+      className={b('side-bar')}
+        menuItems={menuItems}
+        compact={false}
+        expandTitle='expandTitle'
+        headerDecoration={true}
+        logo={{
+          text: 'Supping',
+          iconSrc: logo
+        }}
+        renderContent={() => <Outlet />}
+      />
 
-      <div className={b('table-inventory')}>
-        <Text variant='display-2' className={b('table-title')}>Инвентарь</Text>
-        <div className={b("columns-name", "grid-table-inventory")}>
-          <div>Вкл/выкл <br /> в выдачу</div>
-          <div>Тип</div>
-          <div>Наименование</div>
-          <div>Фото</div>
-          <div>Инв.Номер</div>
-          <div>Состояние батареи</div>
-          <div>Стоимость <br /> номинальная</div>
-        </div>
-        {showLoader ?
-          <Loader className={b('loader')} size='l' />
-          :
-          items.map((item) => {
-            return <Item className='grid-table-inventory' item={item} key={item.id} />
-          })}
-      </div>
-      <TableStock />
     </div>
   );
 }

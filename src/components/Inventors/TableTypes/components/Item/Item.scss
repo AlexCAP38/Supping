@@ -1,0 +1,29 @@
+$block: '.item';
+
+#{$block}__ {
+    min-height: 30px;
+
+    #{$block}__name {
+        display: flex;
+        justify-content: left;
+        align-items: center;
+    }
+
+    #{$block}__cost {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    #{$block}__description {
+        display: flex;
+        justify-content: right;
+        align-items: center;
+        padding-right: 20px;
+    }
+}
+
+#{$block}__:hover {
+    cursor: pointer;
+    background-color: rgb(230, 230, 230);
+}
