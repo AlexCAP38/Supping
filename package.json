@@ -1,0 +1,38 @@
+{
+  "name": "supping",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "homepage": "https://alexcap38.github.io/Supping/",
+  "scripts": {
+    "start": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
+  },
+  "dependencies": {
+    "@bem-react/classname": "^1.6.0",
+    "@gravity-ui/components": "^4.0.1",
+    "@gravity-ui/navigation": "^3.1.1",
+    "axios": "^1.7.9",
+    "bem-cn-lite": "^4.1.0",
+    "lit": "^3.1.4",
+    "react": "^18.3.1",
+    "react-dom": "^18.0.0",
+    "react-router": "^6.26.1",
+    "react-router-dom": "^6.26.1"
+  },
+  "devDependencies": {
+    "@gravity-ui/icons": "^2.2.0",
+    "@gravity-ui/uikit": "^7.5.0",
+    "@types/node": "^22.5.4",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "gh-pages": "^6.1.1",
+    "sass": "^1.78.0",
+    "typescript": "^5.5.4",
+    "vite": "^6.2.0"
+  }
+}

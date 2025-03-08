@@ -1,0 +1,40 @@
+$block: '.table-types';
+
+#{$block} {
+    width: 1000px;
+    display: flex;
+    flex-direction: column;
+    padding: 60px;
+
+    #{$block}__table-title {
+        width: 100%;
+        display: block;
+        text-align: center;
+        background-color: rgb(200, 200, 200);
+    }
+
+    #{$block}__columns-name {
+        width: 100%;
+        background-color: rgb(200, 200, 200);
+
+        div {
+            justify-self: center;
+            align-self: center;
+            text-align: center;
+        }
+    }
+
+    #{$block}__table-btn {
+        margin-top: 20px;
+        opacity: 0.3;
+    }
+
+    #{$block}__table-btn:hover {
+        opacity: 1;
+    }
+
+    .grid-table {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+    }
+}

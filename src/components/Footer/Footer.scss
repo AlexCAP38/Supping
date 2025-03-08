@@ -1,0 +1,24 @@
+@use '../../variables.scss' as *;
+$block: '.footer';
+
+#{$block} {
+    background-color: $color-black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 50px;
+    position: fixed;
+    bottom: 0;
+    width: 425px;
+    // opacity: 0.9;
+}
+
+#{$block}:hover {
+    cursor: pointer;
+}
+
+#{$block}__text {
+    color: #fff;
+    font-size: 30px;
+    letter-spacing: 2px;
+}

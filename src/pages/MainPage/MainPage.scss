@@ -1,0 +1,31 @@
+$block: '.main-page';
+
+#{$block} {
+    max-width: 425px;
+    height: 100vh;
+    margin: auto;
+
+    &__loader {
+        width: 100%;
+        height: calc(100% - 100px);
+        justify-content: center;
+        align-items: center;
+
+        --g-color-base-brand: #04B1FB;
+
+        .g-loader__left {
+            height: calc(72px / 1.5);
+            width: 18px;
+        }
+
+        .g-loader__center {
+            height: 72px;
+            width: 18px;
+        }
+
+        .g-loader__right {
+            height: calc(72px / 1.5);
+            width: 18px;
+        }
+    }
+}

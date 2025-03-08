@@ -1,0 +1,14 @@
+$block: '.admin-page';
+
+#{$block} {
+
+    // width: 100%;
+    // padding: 30px 30px;
+    // display: flex;
+    // flex-direction: row;
+    // gap: 50px;
+
+    #{$block}__side-bar {
+        --gn-aside-header-decoration-expanded-background-color: #019fe1;
+    }
+}

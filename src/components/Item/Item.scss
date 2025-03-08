@@ -1,0 +1,131 @@
+@use '../../variables.scss' as *;
+
+$block: '.item-container';
+
+#{$block}__item {
+    display: grid;
+    grid-template-columns: 160px 90px 50px 50px 60px;
+    height: 37px;
+
+    div {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-left: 1px solid $color-black;
+        border-right: 1px solid $color-black;
+        color: $color-black;
+    }
+
+    >div:first-of-type {
+        justify-content: left;
+        border-left: 0;
+    }
+
+    >div:last-of-type {
+        justify-content: right;
+        border-right: 0;
+    }
+
+    .name {
+        display: block;
+        line-height: 37px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    .number {
+        width: 78px;
+        height: 30px;
+        border-radius: 5px;
+        font-size: 16px;
+        background-color: $color-blue;
+        border: 0;
+        display: flex;
+        justify-content: flex-start;
+        align-items: flex-end;
+        padding-left: 4px;
+        padding-bottom: 6px;
+        box-sizing: border-box;
+        overflow: hidden;
+
+        .first {
+            font-size: 22px;
+            letter-spacing: -1px;
+        }
+
+        .second {
+            font-size: 14px;
+            line-height: 12px;
+            margin-left: 2px;
+        }
+    }
+}
+
+
+#{$block}__item-detail {
+
+    .g-modal__content {
+        display: flex;
+        flex-direction: column;
+        width: 350px;
+        align-items: center;
+        border: 1px solid #000;
+    }
+
+    .container-title {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+
+        .item-title {
+            font-size: 24px;
+            color: $color-blue;
+            margin: 8px 0 0 13px;
+        }
+
+        .invent-number {
+            background-color: $color-blue;
+            width: 110px;
+            height: 50px;
+            border-bottom-left-radius: 10px;
+            display: flex;
+            align-items: flex-end;
+            padding-left: 10px;
+            padding-bottom: 10px;
+            box-sizing: border-box;
+
+            .first {
+                font-size: 36px;
+                letter-spacing: -1px;
+                color: $color-black;
+            }
+
+            .second {
+                color: $color-black;
+                font-size: 20px;
+                line-height: 7px;
+                margin-left: 2px;
+                letter-spacing: 1px;
+            }
+        }
+    }
+
+    .item-image {
+        width: 100%;
+        margin-top: 12px;
+        border: 1px solid #000;
+    }
+
+    .btn-rent {
+        width: 100%;
+        height: 50px;
+        margin-top: 50px;
+        background-color: $color-blue;
+        color: #fff;
+        font-size: 34px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+}
