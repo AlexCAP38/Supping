@@ -4,8 +4,9 @@ $block: '.main-page';
     max-width: 425px;
     height: 100vh;
     margin: auto;
+    --g-text-body-font-family: 'Bebas', sans-serif;
 
-    &__loader {
+    #{$block}__loader {
         width: 100%;
         height: calc(100% - 100px);
         justify-content: center;

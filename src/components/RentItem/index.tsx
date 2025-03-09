@@ -10,9 +10,9 @@ import {RentItem as RItem, StatusItem} from "@services/types";
 import {sendPayment} from "@services/api";
 import {AppContext} from '@context/Context';
 
-const b = block('rent-item-container');
+const b = block('rent-item');
 
-interface IItemProps {
+interface RentItemProps {
     rentItem: RItem;
     // newItemWithStatus: (data: RItem) => void;
 }
@@ -23,9 +23,17 @@ type TimeRent = {
     total: string
 }
 
-export const RentItem: FC<IItemProps> = ({rentItem}) => {
+export const RentItem: FC<RentItemProps> = ({rentItem}) => {
     const {state: {rentItems}, setState} = useContext(AppContext);
-    const {item, startTime, endTime, rentTime, rentCost, status, description, item: {lowEnergy}, rentCostFact} = rentItem;
+    const {item,
+        startTime,
+        endTime,
+        rentTime,
+        rentCost,
+        status,
+        description,
+        item: {lowEnergy},
+        rentCostFact} = rentItem;
 
     const formatter = new Intl.NumberFormat('ru-RU', {
         style: "decimal",
@@ -113,11 +121,11 @@ export const RentItem: FC<IItemProps> = ({rentItem}) => {
 
     return (
         <div className={b()}>
-            <div className={b('row')}>
+            <div className={b('container')}>
                 <div className={b('section-info')}>
-                    <img className={b('item-image')} src={item.image ? item.image : Photo} />
+                    <img className={b('image')} src={item.image ? item.image : Photo} />
                     <div className={b('section-title')}>
-                        <Text className={b('name-item')}>{item.description}</Text>
+                        <Text className={b('name')}>{item.description}</Text>
                         <Text className={b('time')}>
                             {`${timeRent.start} - ${timeRent.end} = ${timeRent.total}`}</Text>
                     </div>
@@ -132,7 +140,7 @@ export const RentItem: FC<IItemProps> = ({rentItem}) => {
                         </div>
                     </Text>
                     <div className={b('separator')}></div>
-                    <div className={b('row-container')}>
+                    <div className={b('cost')}>
                         <img src={wallet} />
                         <Text className={b('summa')}>{rentCost}</Text>
                     </div>
@@ -140,12 +148,13 @@ export const RentItem: FC<IItemProps> = ({rentItem}) => {
                 </div>
             </div>
             <div className={b('section-description', {hidden: visibilityBlockDescription})}>
-                <div className={b('item-description')}><p>{description}</p></div>
-                <div className={b('money-description')}>
+                <div className={b('item')}>
+                    <p>{description}</p>
+                </div>
+                <div className={b('money')}>
                     <p>{rentCostFact === 0 ? '' : rentCostFact}</p>
                 </div>
             </div>
-
             <Modal open={visibilityModal}
                 onClose={(event) => {
                     event.stopPropagation();
