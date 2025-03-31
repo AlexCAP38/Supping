@@ -98,7 +98,7 @@ export const ModalStock: FC<NewStockProps> = ({showModal, currentItem, closeModa
                     name: item.name as string,
                     type: {},
                     value: item.value,
-                    unit: item.units,
+                    units: item.units,
                     stock: item.stock,
                     status: item.status
                 })

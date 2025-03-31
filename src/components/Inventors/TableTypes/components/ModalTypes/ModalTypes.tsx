@@ -60,6 +60,14 @@ export const ModalTypes: FC<TypeProps> = ({showModal, currentItem, closeModal, u
 
     function deleteCurrentItem() {
 
+        api.v1.deleteType(item?.id!)
+            .then((response) => {
+                closeModal();
+                updateTable(true);
+            })
+            .catch((error) => {
+                console.log('Ошибка удаления типа инвентаря', error)
+            })
     }
 
     return (
@@ -126,7 +134,6 @@ export const ModalTypes: FC<TypeProps> = ({showModal, currentItem, closeModal, u
                 :
                 <div className={b("btn-container")}>
                     <Button
-                        disabled
                         size="l"
                         children={'Удалить'}
                         onClick={() => deleteCurrentItem()}

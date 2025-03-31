@@ -2,8 +2,9 @@ import './InventoryPage.scss';
 import block from 'bem-cn-lite';
 import React, {useContext, useEffect, useState} from 'react';
 import {AppContext} from '@context/Context';
-import {Item} from '@components/Item';
-import {getInventoryList} from '@services/api';
+import {InventItem} from '@components/InventItem/InventItem';
+import {api} from '@services/api';
+import {InventoryItem} from '@services/types';
 
 const b = block('inventory');
 
@@ -11,9 +12,17 @@ export function InventoryPage() {
   const {state: {inventoryItems}, setState} = useContext(AppContext);
 
   useEffect(() => {
-    getInventoryList()
-      .then((data) => {
-        setState({inventoryItems: data});
+
+    api.v1.findAllByFilter3({
+      // сортировка пока не нужна
+      sort: {
+        field: "status",
+        direction: "ASC"
+      }
+    })
+      .then((response) => {
+        const items = response.data as InventoryItem[];
+        setState({inventoryItems: items});
       })
       .catch(() => {
         //TODO: добавить обработку ошибок (например, модальное окно)
@@ -32,7 +41,7 @@ export function InventoryPage() {
       </div>
       {
         inventoryItems.map((item) => (
-          <Item item={item} />
+          <InventItem item={item} key={item.id}/>
         ))
       }
     </div>

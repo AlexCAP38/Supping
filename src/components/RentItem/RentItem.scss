@@ -6,50 +6,53 @@ $block: '.rent-item';
     border-bottom: 2px solid #626160;
     background-color: #f1f9fc;
 
-    #{$block}__container {
+    #{$block}__section-item {
         display: flex;
         justify-content: space-between;
         gap: 10px;
         margin-bottom: 12px;
+        padding-top: 12px;
 
         #{$block}__section-info {
             display: flex;
-            padding-left: 8px;
             // width: max-content;
-        }
+            gap: 10px;
 
-        #{$block}__image {
-            width: 100%;
-            max-width: 100px;
-            height: auto;
-            object-fit: contain;
-            overflow: hidden;
-            // background-color: #fdfdfd;
-        }
-
-        #{$block}__section-title {
-            margin: 12px 0 0 10px;
-            min-width: 150px;
-            display: flex;
-            flex-direction: column;
-
-            #{$block}__name {
-                height: 55px;
-                width: 100%;
-                color: $color-blue;
-                font-size: 22px;
+            #{$block}__image {
+                width: 100px;
+                height: 100px !important;
+                margin-left: 8px;
+                height: auto;
+                object-fit: cover;
                 overflow: hidden;
-                overflow-wrap: break-word;
+                border-radius: 5px;
+                // background-color: #fdfdfd;
             }
 
-            #{$block}__time {
-                color: $color-black;
-                font-size: 20px;
-                margin-top: 2px;
+            #{$block}__section-title {
+                // margin: 12px 0 0 10px;
+                min-width: 150px;
+                display: flex;
+                flex-direction: column;
+
+                #{$block}__name {
+                    height: 55px;
+                    width: 100%;
+                    color: $color-blue;
+                    font-size: 22px;
+                    overflow: hidden;
+                    overflow-wrap: break-word;
+                }
+
+                #{$block}__time {
+                    color: $color-black;
+                    font-size: 20px;
+                    margin-top: 2px;
+                }
             }
         }
+
         #{$block}__section-price {
-            margin-top: 12px;
             min-width: 105px;
             height: 85px;
             display: flex;
@@ -148,9 +151,9 @@ $block: '.rent-item';
         justify-content: space-between;
 
         #{$block}__item {
-            border-right:  1px solid $color-blue;
-            border-bottom:  1px solid $color-blue;
-            border-top:  1px solid $color-blue;
+            border-right: 1px solid $color-blue;
+            border-bottom: 1px solid $color-blue;
+            border-top: 1px solid $color-blue;
             border-radius: 0 5px 5px 0;
             flex-grow: 1;
             height: 29px;
@@ -171,9 +174,9 @@ $block: '.rent-item';
         }
 
         #{$block}__money {
-            border-left:  1px solid $color-blue;
-            border-bottom:  1px solid $color-blue;
-            border-top:  1px solid $color-blue;
+            border-left: 1px solid $color-blue;
+            border-bottom: 1px solid $color-blue;
+            border-top: 1px solid $color-blue;
             min-width: 105px;
             height: 29px;
             display: flex;
@@ -260,7 +263,7 @@ $block: '.rent-item';
     }
 
     #{$block}__modal-btn {
-        width: 170px;
+        width: 230px;
         margin-top: 20px;
         font-size: 24px;
     }

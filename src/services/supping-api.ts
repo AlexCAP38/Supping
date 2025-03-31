@@ -66,7 +66,13 @@ export interface AppException {
     nativeMethod?: boolean;
     className?: string;
   }[];
-  code?: "NON_UNIQUE" | "INVALID_VALUE" | "INVALID_FORMAT" | "NOT_FOUND" | "INTERNAL_SERVER_ERROR";
+  code?:
+    | "NON_UNIQUE"
+    | "INVALID_VALUE"
+    | "INVALID_FORMAT"
+    | "NOT_FOUND"
+    | "INTERNAL_SERVER_ERROR"
+    | "EXTERNAL_SERVER_ERROR";
   error?: string;
   message?: string;
   suppressed?: {
@@ -139,7 +145,7 @@ export interface ApiUpdateStockRequest {
    */
   value?: number;
   /** Ед. из. */
-  unit?: "MINUTES" | "HOURS" | "DAYS";
+  units?: "MINUTES" | "HOURS" | "DAYS";
   /**
    * Значение в %
    * @format double
@@ -342,6 +348,8 @@ export interface ApiUpdateItemRequest {
    * @max 1024
    */
   description?: string;
+  /** Тип инвентаря */
+  type?: ApiItemItemTypeRequest;
 }
 
 export interface ApiItemTypeRequest {
@@ -502,11 +510,11 @@ export interface PageApiRentResponse {
   /** @format int32 */
   number?: number;
   sort?: SortObject;
-  first?: boolean;
-  last?: boolean;
   pageable?: PageableObject;
   /** @format int32 */
   numberOfElements?: number;
+  first?: boolean;
+  last?: boolean;
   empty?: boolean;
 }
 
@@ -514,12 +522,12 @@ export interface PageableObject {
   /** @format int64 */
   offset?: number;
   sort?: SortObject;
-  paged?: boolean;
-  unpaged?: boolean;
-  /** @format int32 */
-  pageNumber?: number;
   /** @format int32 */
   pageSize?: number;
+  /** @format int32 */
+  pageNumber?: number;
+  paged?: boolean;
+  unpaged?: boolean;
 }
 
 export interface SortObject {
@@ -777,6 +785,22 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * No description
      *
+     * @tags Акции и скидки
+     * @name DeleteStock
+     * @summary Удалить акцию
+     * @request DELETE:/v1/stocks/{id}
+     */
+    deleteStock: (id: string, params: RequestParams = {}) =>
+      this.request<string[], AppException>({
+        path: `/v1/stocks/${id}`,
+        method: "DELETE",
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
      * @tags Записи аренды
      * @name SetStatusPay
      * @summary Установить статус запись аренды Pay
@@ -927,6 +951,22 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * No description
      *
+     * @tags Типы инвентаря
+     * @name DeleteType
+     * @summary Удалить тип
+     * @request DELETE:/v1/item-types/{id}
+     */
+    deleteType: (id: string, params: RequestParams = {}) =>
+      this.request<string[], AppException>({
+        path: `/v1/item-types/${id}`,
+        method: "DELETE",
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
      * @tags Пользователи
      * @name FindAllByFilter
      * @summary Получить список пользователей
@@ -1044,6 +1084,47 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         method: "POST",
         body: data,
         type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Инвентарь
+     * @name GetFile
+     * @summary Получить файл
+     * @request GET:/v1/items/img/{id}
+     */
+    getFile: (id: string, params: RequestParams = {}) =>
+      this.request<string, AppException>({
+        path: `/v1/items/img/${id}`,
+        method: "GET",
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Инвентарь
+     * @name UploadFile
+     * @summary Загрузить файл
+     * @request POST:/v1/items/img/{id}
+     */
+    uploadFile: (
+      id: string,
+      data: {
+        /** @format binary */
+        file: File;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<ApiItemResponse, AppException>({
+        path: `/v1/items/img/${id}`,
+        method: "POST",
+        body: data,
+        type: ContentType.FormData,
         format: "json",
         ...params,
       }),

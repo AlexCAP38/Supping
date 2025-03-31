@@ -1,35 +1,37 @@
-import React, {FC, useState} from "react";
+import './InventItem.scss';
 import block from 'bem-cn-lite';
+import React, {FC, useEffect, useState} from "react";
 import {Text, Modal} from '@gravity-ui/uikit';
 import anyPictures from '@assets/test.jpg'
 import {InventoryItem} from "@services/types";
-import {setRentItem} from "@services/api";
-
-import './Item.scss';
+import {api} from "@services/api";
+import {useNavigate} from 'react-router';
 
 const b = block('item-container');
 
-interface IItemProps {
+interface InventItemProps {
     item: InventoryItem;
 }
 
-
-export const Item: FC<IItemProps> = ({item}) => {
+export const InventItem: FC<InventItemProps> = ({item}) => {
     const [showModal, setShowModal] = useState(false);
-
+    const navigation = useNavigate();
 
     function handleClick() {
         setShowModal(true)
     }
 
     function onSubmit() {
-        setRentItem(item.id).then(()=>{setShowModal(false)});
+        api.v1.startRent(item.id)
+            .then((response) => {
+                setShowModal(false);
+                navigation('/')
+            })
+            .catch((error) => console.log('Ошибка сдачи инвентаря в аренду', error))
     }
 
     return (
-
         <div className={b('item')} key={item.id} onClick={() => {handleClick()}}>
-
             <div className='name'>{item.description}</div>
             <div>
                 <div className='number'>
@@ -41,8 +43,8 @@ export const Item: FC<IItemProps> = ({item}) => {
             <div>{item.type.cost}</div>
             <div>{item.type.cost}</div>
 
-
-            <Modal open={showModal}
+            <Modal
+                open={showModal}
                 className={b('item-detail')}
                 onClose={(event) => {
                     event.stopPropagation();

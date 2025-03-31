@@ -37,7 +37,9 @@ export function LoginPage() {
       // добавить логику для деактивации пользователя, если это требуется
     } else {
       try {
-        await setUserActive(user.id);
+
+//ИСПРАВИТЬ !!!
+        await setUserActive(user.id!);
         const updatedUsers = await getUsers();
         setUsers(updatedUsers);
       } catch (error) {
@@ -49,10 +51,6 @@ export function LoginPage() {
 
   function handleAddUser() {
     setShowModalAddUser(true);
-  }
-  function handleBackPage() {
-
-    navigate(-1);
   }
 
   return (
@@ -70,14 +68,6 @@ export function LoginPage() {
           />
         )
       })}
-
-      <Button
-        onClick={handleBackPage}
-        // pin="circle-circle"
-        selected
-      >
-        <ArrowUturnCcwLeft />
-      </Button>
 
       <Button
         onClick={handleAddUser}

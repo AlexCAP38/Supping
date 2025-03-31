@@ -1,6 +1,6 @@
 import './ModalInventors.scss';
 import block from 'bem-cn-lite';
-import React, {FC, useEffect, useState, useContext} from "react";
+import React, {FC, useEffect, useState, useContext, SyntheticEvent, useRef} from "react";
 import {Button, Modal, TextInput, Checkbox, Text, Select} from '@gravity-ui/uikit';
 import {ApiItemResponse, ApiStockResponse} from "@services/supping-api";
 import {api} from '@services/api';
@@ -53,6 +53,9 @@ export const ModalInventors: FC<NewInventorsProps> = ({showModal, currentItem, c
     const {state} = useContext(AppContext)
 
     const [item, setItem] = useState<ApiItemResponse>(initItem)
+    const [imageFile, setImageFile] = useState<File | null>(null);
+    const [preview, setPreview] = useState<string | null>(null);
+    const imageRef = useRef<HTMLInputElement | null>(null);
 
     //Тип инвентаря
     const [types, setTypes] = useState<UnitValue[] | undefined>(undefined);
@@ -70,7 +73,14 @@ export const ModalInventors: FC<NewInventorsProps> = ({showModal, currentItem, c
 
 
     useEffect(() => {
-        if (currentItem) {setItem(currentItem)}
+        if (currentItem) {
+            setItem(currentItem)
+
+            if (currentItem.image) api.v1.getFile(currentItem.image)
+                .then((response) => {
+                    setPreview(response.data);
+                })
+        }
     }, [currentItem])
 
     //Добавить новый инвентарь
@@ -93,18 +103,21 @@ export const ModalInventors: FC<NewInventorsProps> = ({showModal, currentItem, c
 
     //Обновить инвентарь
     function updateItem() {
-        if (item && item.id) {
-            api.v1.updateItem(item.id,
-                {
-                    name: item.name as string,
-                    number: item.number,
-                    description: item.description,
-                })
-                .then((response) => {
-                    closeModal();
-                    updateTable(true);
-                })
-                .catch((error) => {console.log('Ошибка обновление акции', error)})
+        if (item && item.id && imageFile) {
+
+            api.v1.uploadFile(item.id, {file: imageFile})
+
+            // api.v1.updateItem(item.id,
+            //     {
+            //         name: item.name as string,
+            //         number: item.number,
+            //         description: item.description,
+            //     })
+            //     .then((response) => {
+            //         closeModal();
+            //         updateTable(true);
+            //     })
+            //     .catch((error) => {console.log('Ошибка обновление инвентаря', error)})
         }
     }
 
@@ -116,7 +129,44 @@ export const ModalInventors: FC<NewInventorsProps> = ({showModal, currentItem, c
                     closeModal();
                     updateTable(true);
                 })
-                .catch((error) => {console.log('Ошибка обновление акции', error)})
+                .catch((error) => {console.log('Ошибка удаления инвентаря', error)})
+        }
+    }
+
+    function handleClick() {
+        // Кликаем по скрытому инпуту
+        imageRef.current?.click();
+    }
+
+    //загрузить изображение
+    function uploadImage(event: React.ChangeEvent<HTMLInputElement>) {
+        if (event.target.files?.length) {
+            const selectedFile = event.target.files[0];
+            setImageFile(selectedFile);
+        }
+    }
+
+
+    function showImage() {
+console.log('--',currentItem?.image)
+console.log(imageFile)
+console.log(preview)
+        if (!currentItem?.image && !imageFile || !preview) {
+            return <>
+                <Text className={b('image-caption')}>Загрузить изображение</Text>
+                <input
+                    ref={imageRef}
+                    className='file'
+                    type='file'
+                    accept='image/jpeg'
+                    onChange={(event) => uploadImage(event)}
+                />
+            </>
+        } else if (imageFile) {
+            return <img className={b('image')} src={URL.createObjectURL(imageFile!)} alt="Изображение" />
+
+        } if (!imageFile && preview) {
+            return <img className={b('image')} src={preview} alt="Изображение" />
         }
     }
 
@@ -126,6 +176,8 @@ export const ModalInventors: FC<NewInventorsProps> = ({showModal, currentItem, c
             onClose={() => {
                 closeModal()
                 setItem(initItem);
+                setImageFile(null);
+                setPreview(null);
             }}
             className={b('container')}
         >
@@ -189,18 +241,10 @@ export const ModalInventors: FC<NewInventorsProps> = ({showModal, currentItem, c
                     description: value
                 }))}
             /> */}
-            <Text className={b('caption')}>URL на изображение</Text>
-            <TextInput
-                className={b('input')}
-                value={item.image ?? ''}
-                size='l'
-                type='text'
-                onUpdate={(value) => setItem((prevState) => ({
-                    ...prevState,
-                    image: value
-                }))}
-            />
-            <img className={b('image')} src={item.image ?? ''} alt="Изображение" />
+            <div className={b('image-container')} onClick={() => handleClick()}>
+                {showImage()}
+            </div>
+
             {!currentItem ?
                 <div className={b("btn-container")}>
                     <Button

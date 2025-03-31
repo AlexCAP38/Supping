@@ -17,6 +17,7 @@
     "@gravity-ui/navigation": "^3.1.1",
     "axios": "^1.7.9",
     "bem-cn-lite": "^4.1.0",
+    "idb": "^8.0.2",
     "lit": "^3.1.4",
     "react": "^18.3.1",
     "react-dom": "^18.0.0",

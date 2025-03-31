@@ -21,6 +21,6 @@
     "lang": "ru-RU",
     "name": "Supping",
     "short_name": "Supping",
-    "start_url": "https://alexcap38.github.io/Supping/",
-    "scope": "https://alexcap38.github.io/Supping/"
+    "start_url": "https://front.supping.justwind.ru/",
+    "scope": "https://front.supping.justwind.ru/"
 }

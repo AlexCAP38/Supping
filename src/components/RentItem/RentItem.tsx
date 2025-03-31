@@ -3,12 +3,13 @@ import block from 'bem-cn-lite';
 import React, {FC, useContext, useEffect, useState} from "react";
 import {Text, Modal, TextArea, TextInput, Button} from '@gravity-ui/uikit';
 import noPhoto from '@assets/no-photo.svg';
-import Photo from '@assets/test.jpg';
 import battery from '@assets/Battery_low.svg';
 import wallet from '@assets/wallet.png';
 import {RentItem as RItem, StatusItem} from "@services/types";
 import {sendPayment} from "@services/api";
 import {AppContext} from '@context/Context';
+import {clearInputValue} from '@utils/ClearInputNumber';
+import {getCachedImage} from '@context/IndexDB';
 
 const b = block('rent-item');
 
@@ -25,37 +26,21 @@ type TimeRent = {
 
 export const RentItem: FC<RentItemProps> = ({rentItem}) => {
     const {state: {rentItems}, setState} = useContext(AppContext);
-    const {item,
-        startTime,
-        endTime,
-        rentTime,
-        rentCost,
-        status,
-        description,
-        item: {lowEnergy},
-        rentCostFact} = rentItem;
-
-    const formatter = new Intl.NumberFormat('ru-RU', {
-        style: "decimal",
-        minimumFractionDigits: 0
-    });
+    const {item, startTime, endTime, rentTime, rentCost, status, description, item: {lowEnergy}, rentCostFact} = rentItem;
 
     const [visibilityModal, setVisibilityModal] = useState(false);
     const [visibilityBlockDescription, setVisibilityBlockDescription] = useState(true);
     const [isLoad, setIsLoad] = useState(false);
     const [inputDescription, setInputDescription] = useState('');
     const [inputGetMoney, setInputGetMoney] = useState(rentCost.toString());
-
-    const [timeRent, setTimeRent] = useState<TimeRent>({
-        start: '',
-        end: '',
-        total: ''
-    });
+    const [image, setImage] = useState<string>(noPhoto);
+    const [timeRent, setTimeRent] = useState<TimeRent>({start: '', end: '', total: ''});
 
     //устанавливаем время в стайте дял удобства и определяем показывать секцию с описание и полученной суммой
     useEffect(() => {
         setTimeRent(getTimeRent(startTime, endTime, rentTime));
-        if (description !== null || rentCostFact !== 0) setVisibilityBlockDescription(false)
+        if (description && rentCostFact !== 0) setVisibilityBlockDescription(false)
+            getImage(rentItem.item.image)
     }, [rentItem])
 
     //извлекаем время
@@ -105,34 +90,43 @@ export const RentItem: FC<RentItemProps> = ({rentItem}) => {
     }
 
     function handlePay() {
+
         setIsLoad(true)
 
-        sendPayment(rentItem.id, inputDescription, Number(inputGetMoney))
+        sendPayment(rentItem.id,
+            !inputDescription && rentCostFact !== parseFloat(inputGetMoney) ? 'Получено средств' : inputDescription,
+            Number(inputGetMoney))
             .then((data) => {
                 setState({rentItems: returnNewItemsList(data)})
                 setIsLoad(false)
                 setVisibilityModal(false);
             })
-            .catch(() => {
+            .catch((error) => {
                 //TODO сделать нормальное предупреждение об ошибке
-                console.log(`Чет наебнулось в обновление арендуемого оборудования`);
+                console.log(`Ошибка при завершение аренды`, error);
             })
     }
 
+async function getImage(id: string) {
+
+    const image:string = await getCachedImage(id);
+if (image) setImage(image)
+}
+
     return (
         <div className={b()}>
-            <div className={b('container')}>
+            <div className={b('section-item')}
+                onClick={(event) => setVisibilityModal(true)}
+            >
                 <div className={b('section-info')}>
-                    <img className={b('image')} src={item.image ? item.image : Photo} />
+                    <img className={b('image')} src={image} />
                     <div className={b('section-title')}>
                         <Text className={b('name')}>{item.description}</Text>
                         <Text className={b('time')}>
                             {`${timeRent.start} - ${timeRent.end} = ${timeRent.total}`}</Text>
                     </div>
                 </div>
-                <div className={b('section-price', `${checkStatus(status)}`)}
-                    onClick={(event) => setVisibilityModal(true)}
-                >
+                <div className={b('section-price', `${checkStatus(status)}`)}>
                     <Text className={b('id-item')}>
                         <div className='number'>
                             <span className="first">{item.name.slice(0, 2)}</span>
@@ -155,7 +149,9 @@ export const RentItem: FC<RentItemProps> = ({rentItem}) => {
                     <p>{rentCostFact === 0 ? '' : rentCostFact}</p>
                 </div>
             </div>
-            <Modal open={visibilityModal}
+
+            <Modal
+                open={visibilityModal}
                 onClose={(event) => {
                     event.stopPropagation();
                     setVisibilityModal(false);
@@ -175,8 +171,7 @@ export const RentItem: FC<RentItemProps> = ({rentItem}) => {
                     <TextInput className={b('modal-input')}
                         size="xl"
                         value={inputGetMoney.toString()}
-                        onUpdate={(value) => setInputGetMoney(value)}
-                        type="number"
+                        onUpdate={(value) => setInputGetMoney(clearInputValue(value))}
                     />
                     <Button className={b('modal-btn')}
                         size="xl"

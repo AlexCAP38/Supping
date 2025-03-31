@@ -1,21 +1,18 @@
+import {ApiUserResponse} from '@services/supping-api';
+
 type StatusRent = 'HOME' | 'RENTED_OUT' | 'NO_ACTIVE' | 'DELETE';
+
 export type StatusItem = 'NEW' | 'ERROR' | 'PAY' | 'NO_PAY' | 'DELETED' | 'DELETE_SHORT_TIME';
 
+export interface User extends ApiUserResponse {};
 
-export type User = {
-    id: string,
-    firstName: string,
-    lastName: string,
-    active: boolean
-}
-
-export type NewUser = {
+export interface NewUser {
     firstName: string,
     lastName: string,
     login: string
 }
 
-export type Item = {
+export interface Item {
     id: string,
     number: number,
     name: string,
@@ -32,7 +29,7 @@ export type Item = {
     image: string
 }
 
-export type RentItem = {
+export interface RentItem {
     id: string,
     item: Item,
     status: StatusItem,
@@ -79,8 +76,7 @@ export interface RentList {
     }
 }
 
-
-export type InventoryItem = {
+export interface InventoryItem {
     id: string,
     number: number,
     name: string,

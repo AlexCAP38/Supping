@@ -38,9 +38,34 @@ $block: '.modal-inventors';
 
     }
 
-    #{$block}__image {
-        width: 350px;
-        padding: 20px 20px;
-        display: block;
+    #{$block}__image-container {
+        box-sizing: border-box;
+        border: 1px solid rgba(168, 168, 168, 0.4);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 200px;
+        height: 200px;
+        margin: auto;
+        overflow: hidden;
+        border-radius: 10px;
+        cursor: pointer;
+
+        #{$block}__image-caption {
+
+            display: block;
+            opacity: 0.4;
+        }
+
+        #{$block}__image {
+            width: inherit;
+            height: inherit;
+            object-fit: cover;
+        }
+
+
+        .file {
+            display: none;
+        }
     }
 }

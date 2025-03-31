@@ -1,7 +1,7 @@
 $block: '.container';
 
 #{$block} {
-    width: 100%;
+    width: inherit;
     height: 100vh;
     display: flex;
     flex-direction: column;
@@ -21,11 +21,10 @@ $block: '.container';
 filter: grayscale(100%);
 }
 
-
 #{$block}__btn-add-user {
     position: fixed;
     left: 47vw;
-    bottom: 20px;
+    bottom: 100px;
     padding: 10px 0 0;
     width: 60px;
     height: 60px;

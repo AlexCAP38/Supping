@@ -73,48 +73,6 @@ export const getItems = (): Promise<Item[]> => {
     })
 }
 
-export const getRentList = (): Promise<RentList> => {
-    return fetch(`${URL}/v1/rents/list/`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(
-            {
-                // сортировка пока не нужна
-                sort: {
-                    field: "status",
-                    direction: "ASC"
-                },
-                page: 0,
-                size: 1000
-            }
-        )
-    }).then((response) => {
-        if (response.ok) return response.json()
-    })
-}
-
-export const getInventoryList = (): Promise<InventoryItem[]> => {
-    return fetch(`${URL}/v1/items/list/`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(
-            {
-                // сортировка пока не нужна
-                sort: {
-                    field: "status",
-                    direction: "ASC"
-                }
-            }
-        )
-    }).then((response) => {
-        if (response.ok) return response.json()
-    })
-}
-
 export const sendPayment = (id:string,description: string, paid: number): Promise<RentItem> => {
     return fetch(`${URL}/v1/rents/${id}/status/pay/`, {
         method: 'PUT',
@@ -128,18 +86,6 @@ export const sendPayment = (id:string,description: string, paid: number): Promis
                 paid: paid
             }
         )
-    }).then((response) => {
-        if (response.ok) return response.json()
-    })
-}
-
-
-export const setRentItem = (id:string): Promise<InventoryItem> => {
-    return fetch(`${URL}/v1/rents/${id}/status/start/`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json'
-        }
     }).then((response) => {
         if (response.ok) return response.json()
     })
