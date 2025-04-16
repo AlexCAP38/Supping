@@ -17,14 +17,22 @@ export function MainPage() {
   const [showLoader, setShowLoader] = useState(true);
   const [timeUpdate, setTimeUpdate] = useState(10000);
 
+  //Сортировка Сначала показываем не оплаченные, потом оплаченные
+  const sortRentItems = (items: RentItem[]) => {
+    const noPay = items.filter((item) => item.status === 'NEW' || item.status === 'NO_PAY');
+    const pay = items.filter((item) => item.status === 'PAY');
+
+    return ([...noPay, ...pay])
+  }
+
   const fetchData = () => {
     //Получаем весь список арендованного инвентаря
     api.v1.findAllByFilter2(
       {
         // сортировка пока не нужна
         sort: {
-          field: "status",
-          direction: "ASC"
+          field: "createdAt",
+          direction: 'DESC'
         },
         page: 0,
         size: 1000
@@ -32,11 +40,15 @@ export function MainPage() {
       .then((response) => {
         const user = response.data?.activeUser as User;
         const items = response.data.rents?.content as RentItem[];
-        setState({user: user});
-        setState({rentItems: items});
+
+        setState({
+          user: user,
+          rentItems: sortRentItems(items)
+        });
+
         setShowLoader(false);
 
-        items.forEach((item)=> cacheImage(item.item.image))
+        items.forEach((item) => cacheImage(item.item.image))
       })
       .catch(() => {
         //TODO: добавить обработку ошибок (например, модальное окно)

@@ -2,10 +2,12 @@ import './InventItem.scss';
 import block from 'bem-cn-lite';
 import React, {FC, useEffect, useState} from "react";
 import {Text, Modal} from '@gravity-ui/uikit';
-import anyPictures from '@assets/test.jpg'
+import clock from '@assets/clock.svg'
 import {InventoryItem} from "@services/types";
 import {api} from "@services/api";
 import {useNavigate} from 'react-router';
+import {getCachedImage} from '@context/IndexDB';
+import {clearInputValue} from '@utils/ClearInputNumber';
 
 const b = block('item-container');
 
@@ -15,11 +17,49 @@ interface InventItemProps {
 
 export const InventItem: FC<InventItemProps> = ({item}) => {
     const [showModal, setShowModal] = useState(false);
+    const [hours, setHours] = useState('');
+    const [minutes, setMinutes] = useState('');
+    const [justClosed, setJustClosed] = useState(false);
+    const [image, setImage] = useState<string>();
+
+    useEffect(() => {
+        setHours(new Date().getHours().toString())
+        setMinutes(new Date().getMinutes().toString())
+    }, [showModal])
+
+    useEffect(() => {
+        async function getImage(id: string) {
+            let image: string;
+            if (id) {
+                image = await getCachedImage(id);
+
+                if (image) setImage(image)
+            }
+        }
+
+        getImage(item.image);
+    }, [item.image]);
+
     const navigation = useNavigate();
 
-    function handleClick() {
-        setShowModal(true)
+    function handleClick(event: React.MouseEvent<HTMLDivElement>) {
+        event.stopPropagation();
+        if (!showModal && !justClosed) {
+            setShowModal(true);
+        }
     }
+
+    function handleClose(event: MouseEvent | KeyboardEvent) {
+        event.stopPropagation();
+        setShowModal(false);
+
+        // Установим "заморозку" клика на короткое время
+        setJustClosed(true);
+        setTimeout(() => {
+            setJustClosed(false);
+        }, 200); // 100–200мс достаточно
+    }
+
 
     function onSubmit() {
         api.v1.startRent(item.id)
@@ -31,7 +71,7 @@ export const InventItem: FC<InventItemProps> = ({item}) => {
     }
 
     return (
-        <div className={b('item')} key={item.id} onClick={() => {handleClick()}}>
+        <div className={b('item')} key={item.id} onClick={(event) => {handleClick(event)}}>
             <div className='name'>{item.description}</div>
             <div>
                 <div className='number'>
@@ -46,13 +86,7 @@ export const InventItem: FC<InventItemProps> = ({item}) => {
             <Modal
                 open={showModal}
                 className={b('item-detail')}
-                onClose={(event) => {
-                    event.stopPropagation();
-                    setShowModal(false)
-                    // setVisibilityModal(false);
-                    // setInputGetMoney(rentCost.toString());
-                    // setInputDescription('');
-                }}
+                onClose={(event) => handleClose(event)}
                 style={{backgroundColor: 'rgba(20,20,20, 0.15)'}}
             >
                 <div className="container-title">
@@ -62,7 +96,38 @@ export const InventItem: FC<InventItemProps> = ({item}) => {
                         <span className="second">{item.name.slice(2, -1)}</span>
                     </div>
                 </div>
-                <img src={anyPictures} className={'item-image'} />
+                <div className={'section-image'}>
+                    {
+                        image ?
+                            <img src={image} className={'image'} />
+                            :
+                            <Text variant='display-4' style={{opacity: '0.3'}}>ФОТО</Text>
+                    }
+                </div>
+                <div className="section-time">
+                    <img src={clock} className={'icon'} alt="Время старта аренды" />
+                    <input
+                        value={hours}
+                        className={'time'}
+                        onChange={(event) => {
+                            const value: number = parseInt(event.target.value)
+                            if (value >= 0 && value < 24 || !value)
+                                setHours(clearInputValue(event.target.value))
+                        }
+                        }
+                    />
+                    <p className={'separator'}>:</p>
+                    <input
+                        value={minutes}
+                        className={'time'}
+                        onChange={(event) => {
+                            const value: number = parseInt(event.target.value)
+                            if (value >= 0 && value < 60 || !value)
+                                setMinutes(clearInputValue(event.target.value))
+                        }}
+                    />
+                </div>
+
                 <div className="btn-rent" onClick={onSubmit}>СДАТЬ</div>
             </Modal>
 

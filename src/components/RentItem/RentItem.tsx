@@ -2,7 +2,8 @@ import './RentItem.scss';
 import block from 'bem-cn-lite';
 import React, {FC, useContext, useEffect, useState} from "react";
 import {Text, Modal, TextArea, TextInput, Button} from '@gravity-ui/uikit';
-import noPhoto from '@assets/no-photo.svg';
+import noPhoto from '@assets/no-photo.png';
+import clock from '@assets/clock.svg'
 import battery from '@assets/Battery_low.svg';
 import wallet from '@assets/wallet.png';
 import {RentItem as RItem, StatusItem} from "@services/types";
@@ -35,12 +36,20 @@ export const RentItem: FC<RentItemProps> = ({rentItem}) => {
     const [inputGetMoney, setInputGetMoney] = useState(rentCost.toString());
     const [image, setImage] = useState<string>(noPhoto);
     const [timeRent, setTimeRent] = useState<TimeRent>({start: '', end: '', total: ''});
+    const [hours, setHours] = useState('');
+    const [minutes, setMinutes] = useState('');
+
+
+    useEffect(() => {
+        setHours(new Date().getHours().toString())
+        setMinutes(new Date().getMinutes().toString())
+    }, [visibilityModal])
 
     //устанавливаем время в стайте дял удобства и определяем показывать секцию с описание и полученной суммой
     useEffect(() => {
         setTimeRent(getTimeRent(startTime, endTime, rentTime));
         if (description && rentCostFact !== 0) setVisibilityBlockDescription(false)
-            getImage(rentItem.item.image)
+        getImage(rentItem.item.image)
     }, [rentItem])
 
     //извлекаем время
@@ -107,15 +116,19 @@ export const RentItem: FC<RentItemProps> = ({rentItem}) => {
             })
     }
 
-async function getImage(id: string) {
+    async function getImage(id: string) {
+        let image: string;
+        if (id) {
+            image = await getCachedImage(id);
 
-    const image:string = await getCachedImage(id);
-if (image) setImage(image)
-}
+            if (image) setImage(image)
+        }
+    }
 
     return (
         <div className={b()}>
-            <div className={b('section-item')}
+            <div
+                className={b('section-item')}
                 onClick={(event) => setVisibilityModal(true)}
             >
                 <div className={b('section-info')}>
@@ -126,6 +139,7 @@ if (image) setImage(image)
                             {`${timeRent.start} - ${timeRent.end} = ${timeRent.total}`}</Text>
                     </div>
                 </div>
+
                 <div className={b('section-price', `${checkStatus(status)}`)}>
                     <Text className={b('id-item')}>
                         <div className='number'>
@@ -136,18 +150,16 @@ if (image) setImage(image)
                     <div className={b('separator')}></div>
                     <div className={b('cost')}>
                         <img src={wallet} />
-                        <Text className={b('summa')}>{rentCost}</Text>
+                        <Text className={b('summa')}>{
+                            status === 'PAY' ? rentCostFact : rentCost
+                        }</Text>
                     </div>
                     <img className={b('battery', {show: lowEnergy})} src={battery} />
                 </div>
             </div>
+
             <div className={b('section-description', {hidden: visibilityBlockDescription})}>
-                <div className={b('item')}>
-                    <p>{description}</p>
-                </div>
-                <div className={b('money')}>
-                    <p>{rentCostFact === 0 ? '' : rentCostFact}</p>
-                </div>
+                {description}
             </div>
 
             <Modal
@@ -163,17 +175,66 @@ if (image) setImage(image)
                 }}
             >
                 <div className={b('modal-container')}>
+                    <div className="container-title">
+                        <Text className={'item-title'}>{item.description}</Text>
+                        <div className={'invent-number'}>
+                            <span className="first">{item.name.slice(0, 2)}</span>
+                            <span className="second">{item.name.slice(2, -1)}</span>
+                        </div>
+                    </div>
+
+                    <div className="section-time">
+                    <img src={clock} className={'icon'} alt="Время старта аренды" />
+                    <p className={'time'}>{new Date(startTime).getHours()}</p>
+                    <p className={'separator'}>:</p>
+                    <p className={'time'}>{new Date(startTime).getMinutes()}</p>
+                    <p className={'separator'}>/</p>
+                    <input
+                        value={hours}
+                        className={'time'}
+                        onChange={(event) => {
+                            const value: number = parseInt(event.target.value)
+                            if (value >= 0 && value < 24 || !value)
+                                setHours(clearInputValue(event.target.value))
+                        }
+                        }
+                    />
+                    <p className={'separator'}>:</p>
+                    <input
+                        value={minutes}
+                        className={'time'}
+                        onChange={(event) => {
+                            const value: number = parseInt(event.target.value)
+                            if (value >= 0 && value < 60 || !value)
+                                setMinutes(clearInputValue(event.target.value))
+                        }}
+                    />
+                </div>
+
+                    <div className={b("container-money")}>
+                        <img className={b('icon-wallet')} src={wallet} />
+                        <TextInput className={b('modal-input')}
+                            view='clear'
+                            size="xl"
+                            value={inputGetMoney.toString()}
+                            onUpdate={(value) => setInputGetMoney(clearInputValue(value))}
+                        />
+                    </div>
+
                     <TextArea className={b('modal-comment')}
+                        view='clear'
+                        minRows={3}
+                        maxRows={3}
                         placeholder={'Комментарий'}
                         size="xl"
                         onUpdate={(value) => setInputDescription(value)} />
-                    <Text className={b('modal-title')}>Получено</Text>
-                    <TextInput className={b('modal-input')}
-                        size="xl"
-                        value={inputGetMoney.toString()}
-                        onUpdate={(value) => setInputGetMoney(clearInputValue(value))}
-                    />
-                    <Button className={b('modal-btn')}
+                    <div className="btn-rent" onClick={(event) => {
+                        event.stopPropagation();
+                        handlePay();
+                    }}>
+                        Завершить
+                    </div>
+                    {/* <Button className={b('modal-btn')}
                         size="xl"
                         disabled={inputGetMoney.length === 0 ? true : false}
                         selected={inputGetMoney.length !== 0 ? true : false}
@@ -182,7 +243,7 @@ if (image) setImage(image)
                             event.stopPropagation();
                             handlePay();
                         }}
-                    >Завершить</Button>
+                    >Завершить</Button> */}
                 </div>
             </Modal>
         </div>
