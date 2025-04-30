@@ -215,20 +215,23 @@ export interface ApiStockResponse {
   stock?: number;
 }
 
-export interface ApiUpdateRentRequest {
-  /**
-   * Заметки данной аренды
-   * @min 0
-   * @max 1024
-   */
-  description?: string;
-  /**
-   * Внесенная сумма за аренду
-   * @format int32
-   * @min 0
-   * @max 100000
-   */
-  paid?: number;
+export interface ApiStartRentRequest {
+  /** Время начала аренды */
+  startTime?: string;
+  // Серега сказал эта ошибка
+  // startTime?: LocalTime;
+}
+
+/** Время начала аренды */
+export interface LocalTime {
+  /** @format int32 */
+  hour?: number;
+  /** @format int32 */
+  minute?: number;
+  /** @format int32 */
+  second?: number;
+  /** @format int32 */
+  nano?: number;
 }
 
 export interface ApiItemResponse {
@@ -326,6 +329,30 @@ export interface ApiRentResponse {
    * @format date-time
    */
   createdAt?: string;
+}
+
+export interface ApiStopRentRequest {
+  /**
+   * Дата и время завершения аренды
+   * @format date-time
+   */
+  endTime?: string;
+}
+
+export interface ApiUpdateRentRequest {
+  /**
+   * Заметки данной аренды
+   * @min 0
+   * @max 1024
+   */
+  description?: string;
+  /**
+   * Внесенная сумма за аренду
+   * @format int32
+   * @min 0
+   * @max 100000
+   */
+  paid?: number;
 }
 
 export interface ApiUpdateItemRequest {
@@ -510,11 +537,11 @@ export interface PageApiRentResponse {
   /** @format int32 */
   number?: number;
   sort?: SortObject;
-  pageable?: PageableObject;
-  /** @format int32 */
-  numberOfElements?: number;
   first?: boolean;
   last?: boolean;
+  /** @format int32 */
+  numberOfElements?: number;
+  pageable?: PageableObject;
   empty?: boolean;
 }
 
@@ -522,12 +549,12 @@ export interface PageableObject {
   /** @format int64 */
   offset?: number;
   sort?: SortObject;
-  /** @format int32 */
-  pageSize?: number;
-  /** @format int32 */
-  pageNumber?: number;
   paged?: boolean;
   unpaged?: boolean;
+  /** @format int32 */
+  pageNumber?: number;
+  /** @format int32 */
+  pageSize?: number;
 }
 
 export interface SortObject {
@@ -794,6 +821,42 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       this.request<string[], AppException>({
         path: `/v1/stocks/${id}`,
         method: "DELETE",
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Записи аренды
+     * @name StartRent
+     * @summary Запустить аренду
+     * @request PUT:/v1/rents/{itemId}/start
+     */
+    startRent: (itemId: string, data: ApiStartRentRequest, params: RequestParams = {}) =>
+      this.request<ApiRentResponse, AppException>({
+        path: `/v1/rents/${itemId}/start`,
+        method: "PUT",
+        body: data,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Записи аренды
+     * @name StopRent
+     * @summary Остановить аренду
+     * @request PUT:/v1/rents/{id}/stop
+     */
+    stopRent: (id: string, data: ApiStopRentRequest, params: RequestParams = {}) =>
+      this.request<ApiRentResponse, AppException>({
+        path: `/v1/rents/${id}/stop`,
+        method: "PUT",
+        body: data,
+        type: ContentType.Json,
         format: "json",
         ...params,
       }),
@@ -1196,38 +1259,6 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         method: "POST",
         body: data,
         type: ContentType.Json,
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Записи аренды
-     * @name StartRent
-     * @summary Запустить аренду
-     * @request GET:/v1/rents/{itemId}/start
-     */
-    startRent: (itemId: string, params: RequestParams = {}) =>
-      this.request<ApiRentResponse, AppException>({
-        path: `/v1/rents/${itemId}/start`,
-        method: "GET",
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Записи аренды
-     * @name StopRent
-     * @summary Остановить аренду
-     * @request GET:/v1/rents/{id}/stop
-     */
-    stopRent: (id: string, params: RequestParams = {}) =>
-      this.request<ApiRentResponse, AppException>({
-        path: `/v1/rents/${id}/stop`,
-        method: "GET",
-        format: "json",
         ...params,
       }),
 

@@ -118,7 +118,7 @@ $block: '.item-container';
             .second {
                 color: $color-black;
                 font-size: 20px;
-                line-height: 7px;
+                line-height: 10px;
                 margin-left: 2px;
                 letter-spacing: 1px;
             }
@@ -141,14 +141,17 @@ $block: '.item-container';
     }
 
     .section-time {
-        width: 100%;
         display: flex;
         justify-content: center;
         align-items: center;
         margin: 20px 0;
+        color: $color-black;
 
         .icon {
-            width: 40px;
+            width: 35px;
+            margin-right: 10px;
+            //без этого на андроиде иконка ниже текста
+            padding-bottom: 8px;
         }
 
         .separator {
@@ -158,13 +161,14 @@ $block: '.item-container';
         }
 
         .time {
-            display: inline;
-            max-width: 60px;
+            max-width: 35px;
             font-size: 40px;
             border: 0;
             text-align: center;
             background-color: #D8EBF2;
             margin: 0;
+            padding: 0;
+            color: $color-black;
         }
     }
 

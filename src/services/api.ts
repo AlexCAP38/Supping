@@ -54,24 +54,6 @@ export const setUserActive = (id: string): Promise<User> => {
     })
 }
 
-export const getItems = (): Promise<Item[]> => {
-    return fetch(`${URL}/v1/items/list`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(
-            {
-                sort: {
-                    field: 'id',
-                    direction: 'ASC'
-                }
-            }
-        )
-    }).then((response) => {
-        if (response.ok) return response.json()
-    })
-}
 
 export const sendPayment = (id:string,description: string, paid: number): Promise<RentItem> => {
     return fetch(`${URL}/v1/rents/${id}/status/pay/`, {

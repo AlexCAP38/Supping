@@ -19,7 +19,6 @@ export const InventItem: FC<InventItemProps> = ({item}) => {
     const [showModal, setShowModal] = useState(false);
     const [hours, setHours] = useState('');
     const [minutes, setMinutes] = useState('');
-    const [justClosed, setJustClosed] = useState(false);
     const [image, setImage] = useState<string>();
 
     useEffect(() => {
@@ -44,7 +43,7 @@ export const InventItem: FC<InventItemProps> = ({item}) => {
 
     function handleClick(event: React.MouseEvent<HTMLDivElement>) {
         event.stopPropagation();
-        if (!showModal && !justClosed) {
+        if (!showModal) {
             setShowModal(true);
         }
     }
@@ -52,17 +51,10 @@ export const InventItem: FC<InventItemProps> = ({item}) => {
     function handleClose(event: MouseEvent | KeyboardEvent) {
         event.stopPropagation();
         setShowModal(false);
-
-        // Установим "заморозку" клика на короткое время
-        setJustClosed(true);
-        setTimeout(() => {
-            setJustClosed(false);
-        }, 200); // 100–200мс достаточно
     }
 
-
     function onSubmit() {
-        api.v1.startRent(item.id)
+        api.v1.startRent(item.id, {startTime: `${hours}:${minutes}`})
             .then((response) => {
                 setShowModal(false);
                 navigation('/')
@@ -127,11 +119,8 @@ export const InventItem: FC<InventItemProps> = ({item}) => {
                         }}
                     />
                 </div>
-
                 <div className="btn-rent" onClick={onSubmit}>СДАТЬ</div>
             </Modal>
-
-
         </div>
     )
 }

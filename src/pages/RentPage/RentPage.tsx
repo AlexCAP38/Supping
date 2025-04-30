@@ -11,7 +11,11 @@ export function RentPage() {
 
   return (
     <div className={b()}>
-      {rentItems.map((item) => (<RentItem key={item.id} rentItem={item} />))}
+      {rentItems.map((item) =>
+        <RentItem
+          key={item.id}
+          rentItem={item}
+        />)}
     </div>
   );
 }
