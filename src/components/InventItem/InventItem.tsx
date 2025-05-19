@@ -1,6 +1,6 @@
 import './InventItem.scss';
 import block from 'bem-cn-lite';
-import React, {FC, useEffect, useState} from "react";
+import React, {FC, useEffect, useRef, useState} from "react";
 import {Text, Modal} from '@gravity-ui/uikit';
 import clock from '@assets/clock.svg'
 import {InventoryItem} from "@services/types";
@@ -20,6 +20,7 @@ export const InventItem: FC<InventItemProps> = ({item}) => {
     const [hours, setHours] = useState('');
     const [minutes, setMinutes] = useState('');
     const [image, setImage] = useState<string>();
+    const closingRef = useRef(false);
 
     useEffect(() => {
         setHours(new Date().getHours().toString())
@@ -42,7 +43,10 @@ export const InventItem: FC<InventItemProps> = ({item}) => {
     const navigation = useNavigate();
 
     function handleClick(event: React.MouseEvent<HTMLDivElement>) {
+        if (closingRef.current) return;
+
         event.stopPropagation();
+
         if (!showModal) {
             setShowModal(true);
         }
@@ -50,11 +54,29 @@ export const InventItem: FC<InventItemProps> = ({item}) => {
 
     function handleClose(event: MouseEvent | KeyboardEvent) {
         event.stopPropagation();
+
+        closingRef.current = true;
+
         setShowModal(false);
+
+        setTimeout(() => {
+            closingRef.current = false;
+        }, 100);
     }
 
     function onSubmit() {
-        api.v1.startRent(item.id, {startTime: `${hours}:${minutes}`})
+
+        api.v1.startRent(item.id,
+            {
+                startTime:
+                {
+                    //Ошибка при отправке Серега разбирается
+                    hour: parseInt(hours),
+                    minute: parseInt(minutes),
+                    second: 0,
+                    nano: 0
+                }
+            })
             .then((response) => {
                 setShowModal(false);
                 navigation('/')

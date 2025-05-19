@@ -217,9 +217,7 @@ export interface ApiStockResponse {
 
 export interface ApiStartRentRequest {
   /** Время начала аренды */
-  startTime?: string;
-  // Серега сказал эта ошибка
-  // startTime?: LocalTime;
+  startTime?: LocalTime;
 }
 
 /** Время начала аренды */
@@ -1259,6 +1257,20 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         method: "POST",
         body: data,
         type: ContentType.Json,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Записи аренды
+     * @name GetRentItem
+     * @request GET:/v1/rents/{id}/
+     */
+    getRentItem: (id: string, params: RequestParams = {}) =>
+      this.request<ApiRentResponse, any>({
+        path: `/v1/rents/${id}/`,
+        method: "GET",
         ...params,
       }),
 

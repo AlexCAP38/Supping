@@ -9,6 +9,7 @@ import {RentItem as RItem, StatusItem} from "@services/types";
 import {api} from "@services/api";
 import {AppContext} from '@context/Context';
 import {getCachedImage} from '@context/IndexDB';
+import {RentModal} from './components/RentModal/RentModal';
 
 const b = block('rent-item');
 
@@ -25,11 +26,9 @@ type TimeRent = {
 export const RentItem: FC<RentItemProps> = ({rentItem}) => {
     const {state: {rentItems}, setState} = useContext(AppContext);
     const {item, startTime, endTime, rentTime, rentCost, status, description, item: {lowEnergy}, rentCostFact} = rentItem;
+    const [showModal, setShowModal] = useState(false);
 
     const [visibilityBlockDescription, setVisibilityBlockDescription] = useState(true);
-    const [isLoad, setIsLoad] = useState(false);
-    const [inputDescription, setInputDescription] = useState('');
-    const [inputGetMoney, setInputGetMoney] = useState(rentCost.toString());
     const [image, setImage] = useState<string>(noPhoto);
     const [timeRent, setTimeRent] = useState<TimeRent>({start: '', end: '', total: ''});
 
@@ -80,6 +79,12 @@ export const RentItem: FC<RentItemProps> = ({rentItem}) => {
         }
     }
 
+
+    function handleClick(event: React.MouseEvent<HTMLDivElement>) {
+        event.stopPropagation();
+        setShowModal(true);
+    }
+
     //   Ручное обновление статуса
     function returnNewItemsList(ItemWithNewStatus: RItem) {
         const newList = rentItems.map(item => item.id === ItemWithNewStatus.id ? ItemWithNewStatus : item)
@@ -99,7 +104,7 @@ export const RentItem: FC<RentItemProps> = ({rentItem}) => {
         <div className={b()}>
             <div
                 className={b('section-item')}
-                // onClick={(event) => handleClick(event)}
+                onClick={(event) => handleClick(event)}
             >
                 <div className={b('section-info')}>
                     <img className={b('image')} src={image} />
@@ -131,6 +136,13 @@ export const RentItem: FC<RentItemProps> = ({rentItem}) => {
             <div className={b('section-description', {hidden: visibilityBlockDescription})}>
                 {description}
             </div>
+            {
+                showModal && <RentModal
+                    showModal={showModal}
+                    setShowModal={() => setShowModal}
+                    idRentItem={rentItem.id}
+                />
+            }
         </div>
     )
 }
