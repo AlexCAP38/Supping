@@ -180,6 +180,7 @@ export interface ApiItemTypeResponse {
    * @max 1024
    */
   description?: string;
+  auto?: boolean;
 }
 
 export interface ApiStockResponse {
@@ -216,20 +217,12 @@ export interface ApiStockResponse {
 }
 
 export interface ApiStartRentRequest {
-  /** Время начала аренды */
-  startTime?: LocalTime;
-}
-
-/** Время начала аренды */
-export interface LocalTime {
-  /** @format int32 */
-  hour?: number;
-  /** @format int32 */
-  minute?: number;
-  /** @format int32 */
-  second?: number;
-  /** @format int32 */
-  nano?: number;
+  /**
+   * Время начала аренды
+   * @format time
+   * @example "00:00:00"
+   */
+  startTime?: string;
 }
 
 export interface ApiItemResponse {
@@ -333,6 +326,7 @@ export interface ApiStopRentRequest {
   /**
    * Дата и время завершения аренды
    * @format date-time
+   * @example "2025-01-01T00:00:00Z"
    */
   endTime?: string;
 }
@@ -408,6 +402,8 @@ export interface ApiFilterRequest {
    * @max 50
    */
   search?: string;
+  /** Возвращать только актуальный список */
+  actualOnly?: boolean;
 }
 
 /** Сортировка полученного результата */
@@ -488,6 +484,8 @@ export interface ApiRentFilterRequest {
    * @max 50
    */
   search?: string;
+  /** Возвращать только актуальный список */
+  actualOnly?: boolean;
   /**
    * Текущая страница
    * @format int32
@@ -535,11 +533,11 @@ export interface PageApiRentResponse {
   /** @format int32 */
   number?: number;
   sort?: SortObject;
-  first?: boolean;
-  last?: boolean;
   /** @format int32 */
   numberOfElements?: number;
   pageable?: PageableObject;
+  first?: boolean;
+  last?: boolean;
   empty?: boolean;
 }
 
@@ -863,24 +861,6 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Записи аренды
-     * @name SetStatusPay
-     * @summary Установить статус запись аренды Pay
-     * @request PUT:/v1/rents/{id}/status/pay
-     */
-    setStatusPay: (id: string, data: ApiUpdateRentRequest, params: RequestParams = {}) =>
-      this.request<ApiRentResponse, AppException>({
-        path: `/v1/rents/${id}/status/pay`,
-        method: "PUT",
-        body: data,
-        type: ContentType.Json,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags Записи аренды
      * @name SetStatusError
      * @summary Установить статус запись аренды Error
      * @request PUT:/v1/rents/{id}/status/error
@@ -889,6 +869,24 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       this.request<ApiRentResponse, AppException>({
         path: `/v1/rents/${id}/status/error`,
         method: "PUT",
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Записи аренды
+     * @name SetStatusPay
+     * @summary Установить статус запись аренды Pay
+     * @request PUT:/v1/rents/{id}/payment
+     */
+    setStatusPay: (id: string, data: ApiUpdateRentRequest, params: RequestParams = {}) =>
+      this.request<ApiRentResponse, AppException>({
+        path: `/v1/rents/${id}/payment`,
+        method: "PUT",
+        body: data,
+        type: ContentType.Json,
         format: "json",
         ...params,
       }),

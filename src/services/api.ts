@@ -9,7 +9,6 @@ import {
     RentList,
     User,
     NewUser,
-    Item,
     RentItem,
     InventoryItem
 } from "./types";

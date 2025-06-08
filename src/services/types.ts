@@ -1,4 +1,4 @@
-import {ApiUserResponse} from '@services/supping-api';
+import {ApiItemResponse, ApiRentResponse, ApiUserResponse} from '@services/supping-api';
 
 type StatusRent = 'HOME' | 'RENTED_OUT' | 'NO_ACTIVE' | 'DELETE';
 
@@ -12,26 +12,9 @@ export interface NewUser {
     login: string
 }
 
-export interface Item {
-    id: string,
-    number: number,
-    name: string,
-    description: string,
-    type: {
-        id: string,
-        name: string,
-        cost: number,
-        description: string
-    },
-    status: StatusRent,
-    volt: number,
-    lowEnergy: boolean,
-    image: string
-}
-
 export interface RentItem {
     id: string,
-    item: Item,
+    item: ApiItemResponse,
     status: StatusItem,
     description: string,
     startTime: string,

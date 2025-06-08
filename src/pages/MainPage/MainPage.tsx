@@ -34,6 +34,9 @@ export function MainPage() {
           field: "createdAt",
           direction: 'DESC'
         },
+        // Возвращать только актуальный список
+        //TODO вынесли в UI
+        actualOnly: true,
         page: 0,
         size: 1000
       })
@@ -48,7 +51,7 @@ export function MainPage() {
 
         setShowLoader(false);
 
-        items.forEach((item) => cacheImage(item.item.image))
+        items.forEach((item) => item.item.image && cacheImage(item.item.image))
       })
       .catch(() => {
         //TODO: добавить обработку ошибок (например, модальное окно)

@@ -106,18 +106,24 @@ export const ModalInventors: FC<NewInventorsProps> = ({showModal, currentItem, c
         if (item && item.id && imageFile) {
 
             api.v1.uploadFile(item.id, {file: imageFile})
+                .then((response) => {
+                    closeModal();
+                    updateTable(true);
+                })
+                .catch((error) => {console.log('Ошибка обновление изображения', error)})
 
-            // api.v1.updateItem(item.id,
-            //     {
-            //         name: item.name as string,
-            //         number: item.number,
-            //         description: item.description,
-            //     })
-            //     .then((response) => {
-            //         closeModal();
-            //         updateTable(true);
-            //     })
-            //     .catch((error) => {console.log('Ошибка обновление инвентаря', error)})
+        } else if (item && item.id) {
+            api.v1.updateItem(item.id,
+                {
+                    name: item.name as string,
+                    number: item.number,
+                    description: item.description,
+                })
+                .then((response) => {
+                    closeModal();
+                    updateTable(true);
+                })
+                .catch((error) => {console.log('Ошибка обновление инвентаря', error)})
         }
     }
 
@@ -146,11 +152,7 @@ export const ModalInventors: FC<NewInventorsProps> = ({showModal, currentItem, c
         }
     }
 
-
     function showImage() {
-console.log('--',currentItem?.image)
-console.log(imageFile)
-console.log(preview)
         if (!currentItem?.image && !imageFile || !preview) {
             return <>
                 <Text className={b('image-caption')}>Загрузить изображение</Text>
@@ -166,7 +168,16 @@ console.log(preview)
             return <img className={b('image')} src={URL.createObjectURL(imageFile!)} alt="Изображение" />
 
         } if (!imageFile && preview) {
-            return <img className={b('image')} src={preview} alt="Изображение" />
+            return <>
+                <img className={b('image')} src={preview} alt="Изображение" />
+                <input
+                    ref={imageRef}
+                    className='file'
+                    type='file'
+                    accept='image/jpeg'
+                    onChange={(event) => uploadImage(event)}
+                />
+            </>
         }
     }
 

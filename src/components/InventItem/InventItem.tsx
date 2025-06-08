@@ -17,14 +17,19 @@ interface InventItemProps {
 
 export const InventItem: FC<InventItemProps> = ({item}) => {
     const [showModal, setShowModal] = useState(false);
-    const [hours, setHours] = useState('');
-    const [minutes, setMinutes] = useState('');
+    const [startTime, setStartTime] = useState('');
+    const dateObj = new Date(startTime);
+    const hours = dateObj.getHours().toString().padStart(2, '0');
+    const minutes = dateObj.getMinutes().toString().padStart(2, '0');
+    // const [hours, setHours] = useState('');
+    // const [minutes, setMinutes] = useState('');
     const [image, setImage] = useState<string>();
     const closingRef = useRef(false);
 
     useEffect(() => {
-        setHours(new Date().getHours().toString())
-        setMinutes(new Date().getMinutes().toString())
+        setStartTime(new Date().toISOString());
+        // setHours(new Date().getHours().toString())
+        // setMinutes(new Date().getMinutes().toString())
     }, [showModal])
 
     useEffect(() => {
@@ -64,19 +69,9 @@ export const InventItem: FC<InventItemProps> = ({item}) => {
         }, 100);
     }
 
-    function onSubmit() {
-
-        api.v1.startRent(item.id,
-            {
-                startTime:
-                {
-                    //Ошибка при отправке Серега разбирается
-                    hour: parseInt(hours),
-                    minute: parseInt(minutes),
-                    second: 0,
-                    nano: 0
-                }
-            })
+    function startRent() {
+        const dateObj = new Date(startTime);
+        api.v1.startRent(item.id, {startTime: `${dateObj.getUTCHours().toString().padStart(2, '0')}:${dateObj.getUTCMinutes().toString().padStart(2, '0')}:00`})
             .then((response) => {
                 setShowModal(false);
                 navigation('/')
@@ -125,10 +120,13 @@ export const InventItem: FC<InventItemProps> = ({item}) => {
                         className={'time'}
                         onChange={(event) => {
                             const value: number = parseInt(event.target.value)
-                            if (value >= 0 && value < 24 || !value)
-                                setHours(clearInputValue(event.target.value))
-                        }
-                        }
+                            if (value >= 0 && value < 24 || !value) {
+                                const newDate = new Date(startTime);
+                                newDate.setHours(isNaN(value) ? 0 : value);
+                                setStartTime(newDate.toISOString());
+                                // setHours(clearInputValue(event.target.value))
+                            }
+                        }}
                     />
                     <p className={'separator'}>:</p>
                     <input
@@ -136,12 +134,16 @@ export const InventItem: FC<InventItemProps> = ({item}) => {
                         className={'time'}
                         onChange={(event) => {
                             const value: number = parseInt(event.target.value)
-                            if (value >= 0 && value < 60 || !value)
-                                setMinutes(clearInputValue(event.target.value))
+                            if (value >= 0 && value < 60 || !value) {
+                                const newDate = new Date(startTime);
+                                newDate.setMinutes(isNaN(value) ? 0 : value);
+                                setStartTime(newDate.toISOString());
+                            }
+                            // setMinutes(clearInputValue(event.target.value))
                         }}
                     />
                 </div>
-                <div className="btn-rent" onClick={onSubmit}>СДАТЬ</div>
+                <div className="btn-rent" onClick={startRent}>СДАТЬ</div>
             </Modal>
         </div>
     )

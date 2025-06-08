@@ -15,16 +15,19 @@ interface RentModalProps {
     showModal: boolean;
     setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
     idRentItem: string;
+    closeRef: React.MutableRefObject<boolean>;
 }
 
-export const RentModal: FC<RentModalProps> = ({showModal, setShowModal, idRentItem}) => {
+export const RentModal: FC<RentModalProps> = ({showModal, setShowModal, idRentItem, closeRef}) => {
     const [item, setItem] = useState<RItem | undefined>(undefined)
-    const [startRent, setStartRent] = useState<{hour: number, minute: number} | undefined>(undefined);
-    const [endRent, setEndRent] = useState<{hour: number, minute: number} | undefined>(undefined);;
+    const [startRent, setStartRent] = useState<{hour: string, minute: string}>({hour: '', minute: ''});
+    const [endRent, setEndRent] = useState<{hour: string, minute: string}>({hour: '', minute: ''});;
     const [isLoad, setIsLoad] = useState(false);
     const [inputDescription, setInputDescription] = useState('');
     const [inputGetMoney, setInputGetMoney] = useState('');
 
+
+    //Получение информации об аренде
     useEffect(() => {
         //ДОБАВИТЬ ЛОАДЕР
 
@@ -37,24 +40,27 @@ export const RentModal: FC<RentModalProps> = ({showModal, setShowModal, idRentIt
     }, [idRentItem])
 
     useEffect(() => {
-        const time = new Date(item?.startTime || '')
+        if (item?.startTime) {
+            const time = new Date(item?.startTime);
 
-        setStartRent({
-            hour: time.getHours(),
-            minute: time.getHours()
-        });
+            setStartRent({
+                hour: time.getHours().toString().padStart(2, '0'),
+                minute: time.getMinutes().toString().padStart(2, '0')
+            });
 
-        setEndRent({
-            hour: new Date().getHours(),
-            minute: new Date().getMinutes()
-        });
-        setInputGetMoney(item?.rentCost.toString() || '')
+            setEndRent({
+                hour: new Date().getHours().toString().padStart(2, '0'),
+                minute: new Date().getMinutes().toString().padStart(2, '0')
+            });
+
+            setInputGetMoney(item?.rentCost.toString() || '')
+        }
+
     }, [item])
 
-    function handlePay() {
+    function handlePay(event: React.MouseEvent) {
+        event.stopPropagation();
         if (!item) return;
-
-        api.v1.stopRent(item.id, {})
 
         setIsLoad(true)
         api.v1.setStatusPay(item.id,
@@ -73,19 +79,38 @@ export const RentModal: FC<RentModalProps> = ({showModal, setShowModal, idRentIt
             })
     }
 
+    function handleStopPay(event: React.MouseEvent) {
+        event.stopPropagation();
+        if (!item) return;
 
+        //На сервер отправляем в UTC формате
+        const stopTime = new Date();
+        stopTime.setHours(parseInt(endRent.hour), parseInt(endRent.minute), 0, 0);
 
+        api.v1.stopRent(item.id, {endTime: stopTime.toISOString()})
+            .then((response) => {
+                setIsLoad(false)
+                setShowModal(false);
+            })
+            .catch((error) => {
+                //TODO сделать нормальное предупреждение об ошибке
+                console.log(`Ошибка при остановке аренды`, error);
+            })
+    }
 
     function handleClose(event: MouseEvent | KeyboardEvent) {
+        closeRef.current = true;
         event.stopPropagation();
 
         setShowModal(false);
 
-        setInputGetMoney(item?.rentCost.toString() || '');
-        setInputDescription('');
+        setTimeout(() => {
+            closeRef.current = false;
+        }, 150);
+
+        // setInputGetMoney(item?.rentCost.toString() || '');
+        // setInputDescription('');
     }
-
-
 
     return (
         <Modal
@@ -99,8 +124,8 @@ export const RentModal: FC<RentModalProps> = ({showModal, setShowModal, idRentIt
                 <div className="section-title">
                     <Text className={'title'}>{item?.item.description}</Text>
                     <div className={'invent-number'}>
-                        <span className="first-letters">{item?.item.name.slice(0, 2)}</span>
-                        <span className="second-letters">{item?.item.name.slice(2, -1)}</span>
+                        <span className="first-letters">{item?.item.name?.slice(0, 2)}</span>
+                        <span className="second-letters">{item?.item.name?.slice(2, -1)}</span>
                     </div>
                 </div>
 
@@ -111,12 +136,15 @@ export const RentModal: FC<RentModalProps> = ({showModal, setShowModal, idRentIt
                     <p className={'start-time'}>{startRent?.minute}</p>
                     <div className="minus-separator"></div>
                     <input
-                        value={endRent?.hour}
+                        value={endRent?.hour || ''}
                         className={'input-time'}
                         onChange={(event) => {
                             const value: number = parseInt(event.target.value)
                             if (value >= 0 && value < 24 || !value) {
-                                // setHours(clearInputValue(event.target.value))
+                                setEndRent(prevState => ({
+                                    ...prevState,
+                                    hour: value.toString().padStart(2, '0')
+                                }))
                             }
                         }}
                     />
@@ -127,7 +155,10 @@ export const RentModal: FC<RentModalProps> = ({showModal, setShowModal, idRentIt
                         onChange={(event) => {
                             const value: number = parseInt(event.target.value)
                             if (value >= 0 && value < 60 || !value) {
-                                // setMinutes(clearInputValue(event.target.value))
+                                setEndRent(prevState => ({
+                                    ...prevState,
+                                    minute: value.toString().padStart(2, '0')
+                                }))
                             }
                         }}
                     />
@@ -140,6 +171,7 @@ export const RentModal: FC<RentModalProps> = ({showModal, setShowModal, idRentIt
                         size="xl"
                         value={inputGetMoney.toString()}
                         onUpdate={(value) => setInputGetMoney(clearInputValue(value))}
+                        disabled={item?.status === 'NEW'}
                     />
                 </div>
 
@@ -149,28 +181,20 @@ export const RentModal: FC<RentModalProps> = ({showModal, setShowModal, idRentIt
                     maxRows={3}
                     placeholder={'Комментарий'}
                     size="xl"
-                    onUpdate={(value) => setInputDescription(value)} />
-                <div className="btn-rent" onClick={(event) => {
-                    event.stopPropagation();
-                    handlePay();
-                }}>
-                    Завершить
-                </div>
-                {/* <Button className={b('modal-btn')}
-            size="xl"
-            disabled={inputGetMoney.length === 0 ? true : false}
-            selected={inputGetMoney.length !== 0 ? true : false}
-            loading={isLoad}
-            onClick={(event) => {
-                event.stopPropagation();
-                handlePay();
-            }}
-        >Завершить</Button> */}
+                    onUpdate={(value) => setInputDescription(value)}
+                    disabled={item?.status === 'NEW'}
+                />
+                {
+                    item?.status === 'NEW' ?
+                        <div className="btn-rent" onClick={(event) => handleStopPay(event)}>
+                            Остановить аренду
+                        </div>
+                        :
+                        <div className="btn-rent" onClick={(event) => handlePay(event)}>
+                            Завершить
+                        </div>
+                }
             </div>
         </Modal>
-
-
-
     )
-
 }
