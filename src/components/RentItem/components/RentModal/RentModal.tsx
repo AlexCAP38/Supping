@@ -89,8 +89,7 @@ export const RentModal: FC<RentModalProps> = ({showModal, setShowModal, idRentIt
 
         api.v1.stopRent(item.id, {endTime: stopTime.toISOString()})
             .then((response) => {
-                setIsLoad(false)
-                setShowModal(false);
+                setItem(response.data as RItem)
             })
             .catch((error) => {
                 //TODO сделать нормальное предупреждение об ошибке
@@ -166,7 +165,7 @@ export const RentModal: FC<RentModalProps> = ({showModal, setShowModal, idRentIt
 
                 <div className={b("section-money")}>
                     <img className={b('icon-wallet')} src={wallet} />
-                    <TextInput className={b('modal-input')}
+                    <TextInput className={b('modal-input', {bgcolor: item?.status === 'NEW'})}
                         view='clear'
                         size="xl"
                         value={inputGetMoney.toString()}
@@ -190,9 +189,14 @@ export const RentModal: FC<RentModalProps> = ({showModal, setShowModal, idRentIt
                             Остановить аренду
                         </div>
                         :
-                        <div className="btn-rent" onClick={(event) => handlePay(event)}>
-                            Завершить
-                        </div>
+                        item?.status === 'PAY' ?
+                            <div className="btn-rent" onClick={(event) => handlePay(event)}>
+                                ОБновить
+                            </div>
+                            :
+                            <div className="btn-rent" onClick={(event) => handlePay(event)}>
+                                Оплатить
+                            </div>
                 }
             </div>
         </Modal>

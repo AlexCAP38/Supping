@@ -24,6 +24,28 @@ export interface ApiUpdateUserRequest {
   lastName?: string;
 }
 
+export interface ApiUserResponse {
+  /**
+   * Идентификатор
+   * @format uuid
+   */
+  id?: string;
+  /**
+   * Имя
+   * @min 3
+   * @max 50
+   */
+  firstName?: string;
+  /**
+   * Фамилия
+   * @min 3
+   * @max 50
+   */
+  lastName?: string;
+  /** Активный */
+  active?: boolean;
+}
+
 export interface AppException {
   cause?: {
     stackTrace?: {
@@ -91,28 +113,6 @@ export interface AppException {
     localizedMessage?: string;
   }[];
   localizedMessage?: string;
-}
-
-export interface ApiUserResponse {
-  /**
-   * Идентификатор
-   * @format uuid
-   */
-  id?: string;
-  /**
-   * Имя
-   * @min 3
-   * @max 50
-   */
-  firstName?: string;
-  /**
-   * Фамилия
-   * @min 3
-   * @max 50
-   */
-  lastName?: string;
-  /** Активный */
-  active?: boolean;
 }
 
 /** Тип инвентаря */
@@ -391,6 +391,7 @@ export interface ApiItemTypeRequest {
    * @max 1024
    */
   description?: string;
+  auto?: boolean;
 }
 
 export interface ApiFilterRequest {
@@ -404,6 +405,8 @@ export interface ApiFilterRequest {
   search?: string;
   /** Возвращать только актуальный список */
   actualOnly?: boolean;
+  /** инвентаря */
+  itemStatus?: "HOME" | "RENTED_OUT" | "NO_ACTIVE" | "DELETE";
 }
 
 /** Сортировка полученного результата */
@@ -486,6 +489,8 @@ export interface ApiRentFilterRequest {
   search?: string;
   /** Возвращать только актуальный список */
   actualOnly?: boolean;
+  /** инвентаря */
+  itemStatus?: "HOME" | "RENTED_OUT" | "NO_ACTIVE" | "DELETE";
   /**
    * Текущая страница
    * @format int32
@@ -533,11 +538,11 @@ export interface PageApiRentResponse {
   /** @format int32 */
   number?: number;
   sort?: SortObject;
+  first?: boolean;
+  last?: boolean;
   /** @format int32 */
   numberOfElements?: number;
   pageable?: PageableObject;
-  first?: boolean;
-  last?: boolean;
   empty?: boolean;
 }
 
@@ -555,8 +560,8 @@ export interface PageableObject {
 
 export interface SortObject {
   empty?: boolean;
-  unsorted?: boolean;
   sorted?: boolean;
+  unsorted?: boolean;
 }
 
 export interface ApiItemRequest {

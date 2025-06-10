@@ -81,16 +81,16 @@ export const InventItem: FC<InventItemProps> = ({item}) => {
 
     return (
         <div className={b('item')} key={item.id} onClick={(event) => {handleClick(event)}}>
-            <div className='name'>{item.description}</div>
+            <div className='name'>{`${item.type.name} ${item.description}`}</div>
             <div>
                 <div className='number'>
                     <span className="first">{item.name.slice(0, 2)}</span>
-                    <span className="second">{item.name.slice(2, -1)}</span>
+                    <span className="second">{item.name.slice(2)}</span>
                 </div>
             </div>
-            <div>{item.type.cost}</div>
-            <div>{item.type.cost}</div>
-            <div>{item.type.cost}</div>
+            <div className='cost'>{item.type.cost}</div>
+            <div className='cost'>{item.type.cost}</div>
+            <div className='cost'>{item.type.cost}</div>
 
             <Modal
                 open={showModal}

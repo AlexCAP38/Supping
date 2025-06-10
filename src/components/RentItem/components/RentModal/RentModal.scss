@@ -23,7 +23,8 @@ $block: '.rent-modal';
             font-family: 'Bebas', sans-serif;
             font-size: 18px;
             color: $color-blue;
-            margin: 4px 0 0 10px;
+            padding-top: 4px;
+            padding-left: 10px;
 
             line-height: 1.2em;
             overflow: hidden;
@@ -65,7 +66,8 @@ $block: '.rent-modal';
         display: flex;
         flex-direction: row;
         align-items: center;
-        margin: 10px 0 10px 40px;
+        margin-top: 10px;
+        padding: 0 40px;
         color: $color-black;
 
         .icon {
@@ -97,18 +99,20 @@ $block: '.rent-modal';
         }
 
         .input-time {
-            max-width: 35px;
+            max-width: 40px;
             font-size: 40px;
-            border: 0;
+            border: 1px solid black;
             text-align: center;
-            background-color: #D8EBF2;
+            // background-color: #D8EBF2;
+            border-radius: 5px;
             padding: 0;
             color: $color-black;
         }
     }
 
     #{$block}__section-money {
-        margin-left: 40px;
+        padding: 0 40px;
+        margin-top: 10px;
         display: flex;
         align-items: baseline;
         overflow: hidden;
@@ -126,14 +130,28 @@ $block: '.rent-modal';
                 font-size: 40px !important;
                 font-weight: 600 !important;
                 color: $color-black;
+                border: 1px solid black;
+                text-align: center;
+                background-color: white;
+                border-radius: 5px;
             }
         }
+
+        #{$block}__modal-input_bgcolor {
+            input {
+                background-color: #D8EBF2;
+            }
+        }
+
     }
 
     #{$block}__modal-comment {
         margin-top: 20px;
         background-color: white;
-        padding-left: 20px;
+
+        .g-text-area__control {
+            padding: 10px;
+        }
     }
 
     .btn-rent {

@@ -4,16 +4,14 @@ $block: '.inventory';
 
 #{$block} {
     display: flex;
-    // align-items: center;
     flex-direction: column;
 
     font-family: Inter;
     font-size: 16px;
     padding: 50px 6px;
-
     &__caption {
         display: grid;
-        grid-template-columns: auto 25% 13% 13% 13%;
+        grid-template-columns: auto 22% 9% 9% 9%;
         height: 37px;
         margin-top: 5px;
 

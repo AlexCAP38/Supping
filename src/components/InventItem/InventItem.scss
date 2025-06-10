@@ -4,8 +4,8 @@ $block: '.item-container';
 
 #{$block}__item {
     display: grid;
-    grid-template-columns: auto 25% 13% 13% 13%;
-    height: 37px;
+    grid-template-columns: auto 22% 9% 9% 9%;
+    height: 40px;
 
     div {
         display: flex;
@@ -28,17 +28,19 @@ $block: '.item-container';
 
     .name {
         display: block;
-        line-height: 37px;
+        font-size: 14px;
+        line-height: 14px;
         overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
+        // white-space: nowrap;
+        // text-overflow: ellipsis;
+        display: flex;
+        align-items: center;
     }
 
     .number {
-        width: 78px;
+        width: 68px;
         height: 30px;
         border-radius: 5px;
-        font-size: 16px;
         background-color: $color-blue;
         border: 0;
         display: flex;
@@ -48,17 +50,23 @@ $block: '.item-container';
         padding-bottom: 6px;
         box-sizing: border-box;
         overflow: hidden;
+        font-family: 'Bebas', sans-serif;
 
         .first {
-            font-size: 22px;
-            letter-spacing: -1px;
+            font-size: 24px;
         }
 
         .second {
-            font-size: 14px;
+            font-size: 16px;
             line-height: 12px;
             margin-left: 2px;
         }
+    }
+
+    .cost {
+        font-family: 'Bebas', sans-serif;
+        font-size: 20px;
+        letter-spacing: -0.2px;
     }
 }
 
@@ -161,11 +169,14 @@ $block: '.item-container';
         }
 
         .time {
-            max-width: 35px;
+            width: 50px;
             font-size: 40px;
             border: 0;
             text-align: center;
-            background-color: #D8EBF2;
+            border: 1px solid black;
+            text-align: center;
+            background-color: white;
+            border-radius: 5px;
             margin: 0;
             padding: 0;
             color: $color-black;

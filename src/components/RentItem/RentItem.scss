@@ -16,11 +16,12 @@ $block: '.rent-item';
             gap: 5px;
 
             #{$block}__image {
+                // box-sizing: border-box;
                 width: 100px;
-                height: 100px !important;
-                height: auto;
-                object-fit: cover;
-                overflow: hidden;
+                height: 100px;
+                // height: auto;
+                object-fit:cover;
+                // overflow: hidden;
             }
 
             #{$block}__section-title {
@@ -31,6 +32,7 @@ $block: '.rent-item';
 
                 #{$block}__name {
                     width: 100%;
+                    line-height: 0.9em;
                     color: $color-blue;
                     font-size: 22px;
                     padding-top: 2px;

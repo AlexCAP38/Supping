@@ -85,7 +85,11 @@ export const RentItem: FC<RentItemProps> = ({rentItem, closeItem}) => {
                 <div className={b('section-info')}>
                     <img className={b('image')} src={image} />
                     <div className={b('section-title')}>
-                        <Text className={b('name')}>{item.description}</Text>
+                        <Text className={b('name')}>
+                            {item.type?.name}
+                            <br/>
+                            {item.description}
+                            </Text>
                         <Text className={b('time')}>
                             {returnTimeRent()}</Text>
                     </div>
@@ -95,7 +99,7 @@ export const RentItem: FC<RentItemProps> = ({rentItem, closeItem}) => {
                     <Text className={b('id-item')}>
                         <div className='number'>
                             <span className="first">{item.name?.slice(0, 2)}</span>
-                            <span className="second">{item.name?.slice(2, -1)}</span>
+                            <span className="second">{item.name?.slice(2)}</span>
                         </div>
                     </Text>
                     <div className={b('separator')}></div>

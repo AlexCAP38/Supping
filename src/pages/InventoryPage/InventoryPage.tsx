@@ -16,9 +16,10 @@ export function InventoryPage() {
     api.v1.findAllByFilter3({
       // сортировка пока не нужна
       sort: {
-        field: "status",
-        direction: "ASC"
-      }
+        field: "type.name",
+        direction: "DESC"
+      },
+      itemStatus: 'HOME'
     })
       .then((response) => {
         const items = response.data as InventoryItem[];
@@ -37,7 +38,7 @@ export function InventoryPage() {
         <div>Инв. №</div>
         <div>1 ч.</div>
         <div>3 ч.</div>
-        <div>день</div>
+        <div>Д.</div>
       </div>
       {
         inventoryItems.map((item) => (
