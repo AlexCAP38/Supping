@@ -34,7 +34,7 @@ export function MainPage() {
           field: "createdAt",
           direction: 'DESC'
         },
-        // Возвращать только актуальный список
+        // Возвращать список за сегодняшний день
         //TODO вынесли в UI
         actualOnly: true,
         page: 0,

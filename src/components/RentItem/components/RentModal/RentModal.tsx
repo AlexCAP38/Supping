@@ -47,8 +47,13 @@ export const RentModal: FC<RentModalProps> = ({showModal, setShowModal, idRentIt
                 hour: time.getHours().toString().padStart(2, '0'),
                 minute: time.getMinutes().toString().padStart(2, '0')
             });
+            if (item.status === 'NO_PAY' || item.status === 'PAY') {
+                setEndRent({
+                    hour: new Date(item.endTime).getHours().toString().padStart(2, '0'),
+                    minute: new Date(item.endTime).getMinutes().toString().padStart(2, '0')
+                });
 
-            setEndRent({
+            } else setEndRent({
                 hour: new Date().getHours().toString().padStart(2, '0'),
                 minute: new Date().getMinutes().toString().padStart(2, '0')
             });
@@ -135,6 +140,7 @@ export const RentModal: FC<RentModalProps> = ({showModal, setShowModal, idRentIt
                     <p className={'start-time'}>{startRent?.minute}</p>
                     <div className="minus-separator"></div>
                     <input
+                        disabled={item?.status === 'PAY' || item?.status === 'NO_PAY'}
                         value={endRent?.hour || ''}
                         className={'input-time'}
                         onChange={(event) => {
@@ -149,6 +155,7 @@ export const RentModal: FC<RentModalProps> = ({showModal, setShowModal, idRentIt
                     />
                     <p className={'separator'}>:</p>
                     <input
+                        disabled={item?.status === 'PAY' || item?.status === 'NO_PAY'}
                         value={endRent?.minute}
                         className={'input-time'}
                         onChange={(event) => {
