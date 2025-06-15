@@ -13,7 +13,7 @@ import {cacheImage, dbPromise} from '@context/IndexDB'
 const b = block('main-page');
 
 export function MainPage() {
-  const {state, setState} = useContext(AppContext);
+  const {state: {rentConfig: {reloadPage}}, setState} = useContext(AppContext);
   const [showLoader, setShowLoader] = useState(true);
   const [timeUpdate, setTimeUpdate] = useState(10000);
 
@@ -46,7 +46,8 @@ export function MainPage() {
 
         setState({
           user: user,
-          rentItems: sortRentItems(items)
+          rentItems: sortRentItems(items),
+          rentConfig:{reloadPage:false}
         });
 
         setShowLoader(false);
@@ -60,11 +61,12 @@ export function MainPage() {
   };
 
   //Таймер обновления
+  //Следим за флагом обновления страницы
   useEffect(() => {
     fetchData();
     const intervalId = setInterval(fetchData, timeUpdate);
     return () => clearInterval(intervalId);
-  }, [timeUpdate]);
+  }, [timeUpdate, reloadPage]);
 
   return (
     <div className={b()}>

@@ -5,9 +5,10 @@ import {Text, Modal, TextArea, TextInput} from '@gravity-ui/uikit';
 import clock from '@assets/clock.svg'
 import {clearInputValue} from '@utils/ClearInputNumber';
 import {api} from "@services/api";
-import React, {FC, useEffect, useState} from 'react';
+import React, {FC, useContext, useEffect, useState} from 'react';
 import {RentItem as RItem, } from "@services/types";
 import wallet from '@assets/wallet.png';
+import {AppContext} from '@context/Context';
 
 const b = block('rent-modal');
 
@@ -25,7 +26,7 @@ export const RentModal: FC<RentModalProps> = ({showModal, setShowModal, idRentIt
     const [isLoad, setIsLoad] = useState(false);
     const [inputDescription, setInputDescription] = useState('');
     const [inputGetMoney, setInputGetMoney] = useState('');
-
+    const {state, setState} = useContext(AppContext);
 
     //Получение информации об аренде
     useEffect(() => {
@@ -74,7 +75,7 @@ export const RentModal: FC<RentModalProps> = ({showModal, setShowModal, idRentIt
                 paid: parseFloat(inputGetMoney)
             })
             .then((response) => {
-                // setState({rentItems: returnNewItemsList(response.data as RItem)})
+                setState({rentConfig:{reloadPage:true}})
                 setIsLoad(false)
                 setShowModal(false);
             })

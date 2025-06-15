@@ -3,6 +3,7 @@ import {Route, Routes} from 'react-router-dom';
 import {ThemeProvider} from '@gravity-ui/uikit';
 import {AppContext, defaultState, State} from '@context/Context';
 import {
+  AuthPage,
   AdminPage,
   LoginPage,
   MainPage,
@@ -27,7 +28,8 @@ export function App() {
     <AppContext.Provider value={{state, setState: updateState}}>
       <ThemeProvider theme="light">
         <Routes>
-          <Route path="/" element={<MainPage />}>
+          <Route path="/" element={<AuthPage/>}>
+          {/* <Route path="/" element={<MainPage />}> */}
             <Route index element={<RentPage />} />
             <Route path="inventory" element={<InventoryPage />} />
           <Route path="users" element={<LoginPage />} />

@@ -11,6 +11,9 @@ export interface Context {
 export interface State {
     user: User;
     rentItems: RentItem[];
+    rentConfig:{
+        reloadPage:boolean;
+    };
     inventoryItems: InventoryItem[];
     itemTypes: ApiItemTypeResponse[]
 };
@@ -19,6 +22,9 @@ export const defaultState: Context = {
     state: {
         user: initUser,
         rentItems: [],
+        rentConfig:{
+            reloadPage:false
+        },
         inventoryItems:[],
         itemTypes:[],
     },
