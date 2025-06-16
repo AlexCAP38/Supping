@@ -1,9 +1,11 @@
 import {Api} from "./supping-api";
+import {tokenStorage} from '@utils/tokenStorage';
 
 const URL = import.meta.env.VITE_API_URL;
-export const api = new Api({baseURL: URL});
-
-
+export const api = new Api({
+    baseURL: URL,
+    headers: {"access-token": tokenStorage.get()}
+});
 
 import {
     RentList,
@@ -54,7 +56,7 @@ export const setUserActive = (id: string): Promise<User> => {
 }
 
 
-export const sendPayment = (id:string,description: string, paid: number): Promise<RentItem> => {
+export const sendPayment = (id: string, description: string, paid: number): Promise<RentItem> => {
     return fetch(`${URL}/v1/rents/${id}/status/pay/`, {
         method: 'PUT',
         headers: {

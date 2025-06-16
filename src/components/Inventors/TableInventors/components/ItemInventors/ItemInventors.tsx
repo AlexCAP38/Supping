@@ -45,7 +45,7 @@ export function ItemInventors({className, item, itemCurrent, showModalInventors,
   return (
     <div className={b('', className)} onClick={(event) => sendCurrentItem(item, event)}>
       <div className={b("active")}>
-        {(item.status === 'HOME' || item.status === 'RENTED_OUT') &&
+        {(item.status === 'HOME' || item.status === 'RENTED') &&
           <Checkbox
             size='l'
             checked={true}

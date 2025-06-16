@@ -1,0 +1,75 @@
+@use '../../variables.scss' as *;
+
+$block: '.authorization';
+
+#{$block} {
+    max-width: 425px;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    --g-text-input-border-color-active: #019fe1;
+    --g-text-input-border-width: 2px;
+
+    --width: 70%;
+
+    &__logo {
+        position: absolute;
+        top: 10dvh;
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        background-color: white;
+        border: 7px solid $color-blue;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+
+        img {
+            max-width: 75%;
+            object-fit: contain;
+        }
+    }
+
+    .g-text-input {
+        width: var(--width);
+    }
+
+    &__label {
+        width: var(--width);
+        padding-left: 15px;
+    }
+
+    &__container {
+        width: var(--width);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 50px;
+
+        //         #{$block}__checkbox{
+        // background-color: #019fe1;
+        //         }
+
+        #{$block}__link {
+            color: #019fe1;
+        }
+    }
+
+    &__log {
+        width: var(--width);
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        color: red;
+        height: 20px;
+        text-align: center;
+    }
+
+    &__label:nth-of-type(2) {
+        margin-top: 10px;
+    }
+}

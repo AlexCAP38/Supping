@@ -44,6 +44,11 @@ export interface ApiUserResponse {
   lastName?: string;
   /** Активный */
   active?: boolean;
+  /**
+   * Сумма заработанная за день
+   * @min 1
+   */
+  totalValue?: number;
 }
 
 export interface AppException {
@@ -60,21 +65,6 @@ export interface AppException {
       className?: string;
     }[];
     message?: string;
-    suppressed?: {
-      stackTrace?: {
-        classLoaderName?: string;
-        moduleName?: string;
-        moduleVersion?: string;
-        methodName?: string;
-        fileName?: string;
-        /** @format int32 */
-        lineNumber?: number;
-        nativeMethod?: boolean;
-        className?: string;
-      }[];
-      message?: string;
-      localizedMessage?: string;
-    }[];
     localizedMessage?: string;
   };
   stackTrace?: {
@@ -94,7 +84,8 @@ export interface AppException {
     | "INVALID_FORMAT"
     | "NOT_FOUND"
     | "INTERNAL_SERVER_ERROR"
-    | "EXTERNAL_SERVER_ERROR";
+    | "EXTERNAL_SERVER_ERROR"
+    | "OLD_PASSWORD_INCORRECT";
   error?: string;
   message?: string;
   suppressed?: {
@@ -222,7 +213,7 @@ export interface ApiStartRentRequest {
    * @format time
    * @example "00:00:00"
    */
-  startTime?: string;
+  startTime: string;
 }
 
 export interface ApiItemResponse {
@@ -253,7 +244,7 @@ export interface ApiItemResponse {
   /** Тип инвентаря */
   type?: ApiItemTypeResponse;
   /** Статус инвентаря */
-  status?: "HOME" | "RENTED_OUT" | "NO_ACTIVE" | "DELETE";
+  status?: "HOME" | "PRE_RENT" | "RENTED" | "NO_ACTIVE" | "DELETE";
   /**
    * Текущее напряжения в mV
    * @format int32
@@ -279,7 +270,7 @@ export interface ApiRentResponse {
   id?: string;
   item?: ApiItemResponse;
   /** Статус аренды */
-  status?: "NEW" | "ERROR" | "PAY" | "NO_PAY" | "DELETED" | "DELETE_SHORT_TIME";
+  status?: "ACTIVE" | "HOLD" | "WAIT_PAYMENT" | "PAID" | "ERROR" | "DELETED" | "DELETE_SHORT_TIME";
   /**
    * Описание
    * @min 1
@@ -316,10 +307,25 @@ export interface ApiRentResponse {
    */
   rentCostFact?: number;
   /**
+   * Сумма предоплаты аренды
+   * @format double
+   * @min 1
+   */
+  preRentCost?: number;
+  /**
    * Таймстемп записи
    * @format date-time
    */
   createdAt?: string;
+}
+
+export interface ApiPreRentRequest {
+  /**
+   * Время начала аренды
+   * @format double
+   */
+  preRentCost: number;
+  description?: string;
 }
 
 export interface ApiStopRentRequest {
@@ -328,7 +334,7 @@ export interface ApiStopRentRequest {
    * @format date-time
    * @example "2025-01-01T00:00:00Z"
    */
-  endTime?: string;
+  endTime: string;
 }
 
 export interface ApiUpdateRentRequest {
@@ -394,6 +400,27 @@ export interface ApiItemTypeRequest {
   auto?: boolean;
 }
 
+export interface ApiUserUpdateRequest {
+  firstName?: string;
+  lastName?: string;
+  patronymic?: string;
+  department?: string;
+  email?: string;
+  messenger?: string;
+}
+
+export interface ApiAccountResponse {
+  /**
+   * Идентификатор
+   * @format uuid
+   */
+  userId?: string;
+  /** Логин пользователя */
+  login?: string;
+  /** Роль пользователя */
+  role?: "ADMIN" | "USER" | "SYSTEM";
+}
+
 export interface ApiFilterRequest {
   /** Сортировка полученного результата */
   sort?: ApiFilterSort;
@@ -403,10 +430,6 @@ export interface ApiFilterRequest {
    * @max 50
    */
   search?: string;
-  /** Возвращать только актуальный список */
-  actualOnly?: boolean;
-  /** инвентаря */
-  itemStatus?: "HOME" | "RENTED_OUT" | "NO_ACTIVE" | "DELETE";
 }
 
 /** Сортировка полученного результата */
@@ -446,6 +469,8 @@ export interface ApiUserRequest {
    * @maxLength 50
    */
   login: string;
+  /** Роль */
+  role: "ADMIN" | "USER" | "SYSTEM";
 }
 
 export interface ApiStockRequest {
@@ -489,8 +514,8 @@ export interface ApiRentFilterRequest {
   search?: string;
   /** Возвращать только актуальный список */
   actualOnly?: boolean;
-  /** инвентаря */
-  itemStatus?: "HOME" | "RENTED_OUT" | "NO_ACTIVE" | "DELETE";
+  /** Статус записи аренды */
+  status?: "ACTIVE" | "HOLD" | "WAIT_PAYMENT" | "PAID" | "ERROR" | "DELETED" | "DELETE_SHORT_TIME";
   /**
    * Текущая страница
    * @format int32
@@ -505,8 +530,6 @@ export interface ApiRentFilterRequest {
    * @max 1000
    */
   size: number;
-  /** Статус записи аренды */
-  status?: "NEW" | "ERROR" | "PAY" | "NO_PAY" | "DELETED" | "DELETE_SHORT_TIME";
 }
 
 export interface ApiDailyRentResponse {
@@ -518,7 +541,6 @@ export interface ApiDailyRentResponse {
   day?: string;
   /**
    * Общая стоимость
-   * @format int32
    * @min 1
    */
   totalCost?: number;
@@ -537,31 +559,46 @@ export interface PageApiRentResponse {
   content?: ApiRentResponse[];
   /** @format int32 */
   number?: number;
-  sort?: SortObject;
-  first?: boolean;
-  last?: boolean;
+  sort?: SortObject[];
+  pageable?: PageableObject;
   /** @format int32 */
   numberOfElements?: number;
-  pageable?: PageableObject;
+  first?: boolean;
+  last?: boolean;
   empty?: boolean;
 }
 
 export interface PageableObject {
   /** @format int64 */
   offset?: number;
-  sort?: SortObject;
-  paged?: boolean;
-  unpaged?: boolean;
+  sort?: SortObject[];
   /** @format int32 */
   pageNumber?: number;
   /** @format int32 */
   pageSize?: number;
+  paged?: boolean;
+  unpaged?: boolean;
 }
 
 export interface SortObject {
-  empty?: boolean;
-  sorted?: boolean;
-  unsorted?: boolean;
+  direction?: string;
+  nullHandling?: string;
+  ascending?: boolean;
+  property?: string;
+  ignoreCase?: boolean;
+}
+
+export interface ApiItemFilterRequest {
+  /** Сортировка полученного результата */
+  sort?: ApiFilterSort;
+  /**
+   * Текст поиска
+   * @min 0
+   * @max 50
+   */
+  search?: string;
+  /** инвентаря */
+  itemStatus?: "HOME" | "PRE_RENT" | "RENTED" | "NO_ACTIVE" | "DELETE";
 }
 
 export interface ApiItemRequest {
@@ -598,6 +635,59 @@ export interface ApiDataRequest {
   volt?: string;
   /** @format int32 */
   timestamp?: number;
+}
+
+export interface ApiResetPasswordRequest {
+  /**
+   * Логин
+   * @min 3
+   * @max 50
+   * @minLength 3
+   * @maxLength 50
+   */
+  login: string;
+  /**
+   * Установить пароль
+   * @min 3
+   * @max 50
+   * @minLength 3
+   * @maxLength 50
+   */
+  password: string;
+}
+
+export interface ApiAuthRequest {
+  /**
+   * Логин
+   * @min 3
+   * @max 50
+   */
+  login: string;
+  /**
+   * Пароль
+   * @min 8
+   * @max 256
+   */
+  password: string;
+}
+
+export interface ApiChangePasswordRequest {
+  /**
+   * Старый пароль
+   * @min 8
+   * @max 256
+   * @minLength 8
+   * @maxLength 256
+   */
+  oldPassword: string;
+  /**
+   * Новый пароль
+   * @min 8
+   * @max 256
+   * @minLength 8
+   * @maxLength 256
+   */
+  newPassword: string;
 }
 
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, HeadersDefaults, ResponseType } from "axios";
@@ -738,7 +828,7 @@ export class HttpClient<SecurityDataType = unknown> {
  * @title Supping web api docs
  * @version 1.0.0
  * @baseUrl /api
- * @contact Supping <info@kiteportal.ru> (http://kiteportal.ru)
+ * @contact Supping (https://front.supping.justwind.ru/)
  */
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
   v1 = {
@@ -749,11 +839,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name GetUser
      * @summary Получить пользователя
      * @request GET:/v1/users/{id}
+     * @secure
      */
     getUser: (id: string, params: RequestParams = {}) =>
       this.request<ApiUserResponse, AppException>({
         path: `/v1/users/${id}`,
         method: "GET",
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -765,12 +857,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name UpdateUser
      * @summary Обновить пользователя
      * @request PUT:/v1/users/{id}
+     * @secure
      */
     updateUser: (id: string, data: ApiUpdateUserRequest, params: RequestParams = {}) =>
       this.request<ApiUserResponse, AppException>({
         path: `/v1/users/${id}`,
         method: "PUT",
         body: data,
+        secure: true,
         type: ContentType.Json,
         format: "json",
         ...params,
@@ -783,11 +877,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name GetStock
      * @summary Получить акцию
      * @request GET:/v1/stocks/{id}
+     * @secure
      */
     getStock: (id: string, params: RequestParams = {}) =>
       this.request<ApiStockResponse, AppException>({
         path: `/v1/stocks/${id}`,
         method: "GET",
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -799,12 +895,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name UpdateStock
      * @summary Обновить акцию
      * @request PUT:/v1/stocks/{id}
+     * @secure
      */
     updateStock: (id: string, data: ApiUpdateStockRequest, params: RequestParams = {}) =>
       this.request<ApiStockResponse, AppException>({
         path: `/v1/stocks/${id}`,
         method: "PUT",
         body: data,
+        secure: true,
         type: ContentType.Json,
         format: "json",
         ...params,
@@ -817,11 +915,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name DeleteStock
      * @summary Удалить акцию
      * @request DELETE:/v1/stocks/{id}
+     * @secure
      */
     deleteStock: (id: string, params: RequestParams = {}) =>
       this.request<string[], AppException>({
         path: `/v1/stocks/${id}`,
         method: "DELETE",
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -833,12 +933,34 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name StartRent
      * @summary Запустить аренду
      * @request PUT:/v1/rents/{itemId}/start
+     * @secure
      */
     startRent: (itemId: string, data: ApiStartRentRequest, params: RequestParams = {}) =>
       this.request<ApiRentResponse, AppException>({
         path: `/v1/rents/${itemId}/start`,
         method: "PUT",
         body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Записи аренды
+     * @name PreRent
+     * @summary Предварительная аренда
+     * @request PUT:/v1/rents/{itemId}/preRent
+     * @secure
+     */
+    preRent: (itemId: string, data: ApiPreRentRequest, params: RequestParams = {}) =>
+      this.request<ApiRentResponse, AppException>({
+        path: `/v1/rents/${itemId}/preRent`,
+        method: "PUT",
+        body: data,
+        secure: true,
         type: ContentType.Json,
         format: "json",
         ...params,
@@ -851,12 +973,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name StopRent
      * @summary Остановить аренду
      * @request PUT:/v1/rents/{id}/stop
+     * @secure
      */
     stopRent: (id: string, data: ApiStopRentRequest, params: RequestParams = {}) =>
       this.request<ApiRentResponse, AppException>({
         path: `/v1/rents/${id}/stop`,
         method: "PUT",
         body: data,
+        secure: true,
         type: ContentType.Json,
         format: "json",
         ...params,
@@ -866,14 +990,16 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Записи аренды
-     * @name SetStatusError
-     * @summary Установить статус запись аренды Error
+     * @name ErrorRent
+     * @summary Ошибочная аренда
      * @request PUT:/v1/rents/{id}/status/error
+     * @secure
      */
-    setStatusError: (id: string, params: RequestParams = {}) =>
+    errorRent: (id: string, params: RequestParams = {}) =>
       this.request<ApiRentResponse, AppException>({
         path: `/v1/rents/${id}/status/error`,
         method: "PUT",
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -882,15 +1008,17 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Записи аренды
-     * @name SetStatusPay
-     * @summary Установить статус запись аренды Pay
+     * @name PaymentRent
+     * @summary Оплата аренды
      * @request PUT:/v1/rents/{id}/payment
+     * @secure
      */
-    setStatusPay: (id: string, data: ApiUpdateRentRequest, params: RequestParams = {}) =>
+    paymentRent: (id: string, data: ApiUpdateRentRequest, params: RequestParams = {}) =>
       this.request<ApiRentResponse, AppException>({
         path: `/v1/rents/${id}/payment`,
         method: "PUT",
         body: data,
+        secure: true,
         type: ContentType.Json,
         format: "json",
         ...params,
@@ -903,11 +1031,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name GetItem
      * @summary Получить Item
      * @request GET:/v1/items/{id}
+     * @secure
      */
     getItem: (id: string, params: RequestParams = {}) =>
       this.request<ApiItemResponse, AppException>({
         path: `/v1/items/${id}`,
         method: "GET",
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -919,12 +1049,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name UpdateItem
      * @summary Обновить Item
      * @request PUT:/v1/items/{id}
+     * @secure
      */
     updateItem: (id: string, data: ApiUpdateItemRequest, params: RequestParams = {}) =>
       this.request<ApiItemResponse, AppException>({
         path: `/v1/items/${id}`,
         method: "PUT",
         body: data,
+        secure: true,
         type: ContentType.Json,
         format: "json",
         ...params,
@@ -937,11 +1069,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name DeleteItem
      * @summary Удалить Item
      * @request DELETE:/v1/items/{id}
+     * @secure
      */
     deleteItem: (id: string, params: RequestParams = {}) =>
       this.request<ApiItemResponse, AppException>({
         path: `/v1/items/${id}`,
         method: "DELETE",
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -953,11 +1087,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name EnableItem
      * @summary Включить Item
      * @request PUT:/v1/items/enable/{id}
+     * @secure
      */
     enableItem: (id: string, params: RequestParams = {}) =>
       this.request<ApiItemResponse, AppException>({
         path: `/v1/items/enable/${id}`,
         method: "PUT",
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -969,11 +1105,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name DisableItem
      * @summary Отключить Item
      * @request PUT:/v1/items/disable/{id}
+     * @secure
      */
     disableItem: (id: string, params: RequestParams = {}) =>
       this.request<ApiItemResponse, AppException>({
         path: `/v1/items/disable/${id}`,
         method: "PUT",
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -985,11 +1123,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name GetType
      * @summary Получить тип
      * @request GET:/v1/item-types/{id}
+     * @secure
      */
     getType: (id: string, params: RequestParams = {}) =>
       this.request<ApiItemTypeResponse, AppException>({
         path: `/v1/item-types/${id}`,
         method: "GET",
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -1001,12 +1141,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name UpdateType
      * @summary Обновить тип
      * @request PUT:/v1/item-types/{id}
+     * @secure
      */
     updateType: (id: string, data: ApiItemTypeRequest, params: RequestParams = {}) =>
       this.request<ApiItemTypeResponse, AppException>({
         path: `/v1/item-types/${id}`,
         method: "PUT",
         body: data,
+        secure: true,
         type: ContentType.Json,
         format: "json",
         ...params,
@@ -1019,11 +1161,33 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name DeleteType
      * @summary Удалить тип
      * @request DELETE:/v1/item-types/{id}
+     * @secure
      */
     deleteType: (id: string, params: RequestParams = {}) =>
       this.request<string[], AppException>({
         path: `/v1/item-types/${id}`,
         method: "DELETE",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Account
+     * @name UpdateAccount
+     * @summary Update account
+     * @request PUT:/v1/account/update
+     * @secure
+     */
+    updateAccount: (data: ApiUserUpdateRequest, params: RequestParams = {}) =>
+      this.request<ApiAccountResponse, AppException>({
+        path: `/v1/account/update`,
+        method: "PUT",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
         format: "json",
         ...params,
       }),
@@ -1035,12 +1199,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name FindAllByFilter
      * @summary Получить список пользователей
      * @request POST:/v1/users/list
+     * @secure
      */
     findAllByFilter: (data: ApiFilterRequest, params: RequestParams = {}) =>
       this.request<ApiUserResponse[], AppException>({
         path: `/v1/users/list`,
         method: "POST",
         body: data,
+        secure: true,
         type: ContentType.Json,
         format: "json",
         ...params,
@@ -1053,11 +1219,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name SetActiveUser
      * @summary Сделать пользователя активным
      * @request POST:/v1/users/active/{id}
+     * @secure
      */
     setActiveUser: (id: string, params: RequestParams = {}) =>
       this.request<ApiUserResponse, AppException>({
         path: `/v1/users/active/${id}`,
         method: "POST",
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -1069,12 +1237,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name CreateUser
      * @summary Создать пользователя
      * @request POST:/v1/users/
+     * @secure
      */
     createUser: (data: ApiUserRequest, params: RequestParams = {}) =>
       this.request<ApiUserResponse, AppException>({
         path: `/v1/users/`,
         method: "POST",
         body: data,
+        secure: true,
         type: ContentType.Json,
         format: "json",
         ...params,
@@ -1087,12 +1257,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name FindAllByFilter1
      * @summary Получить список акций
      * @request POST:/v1/stocks/list
+     * @secure
      */
     findAllByFilter1: (data: ApiFilterRequest, params: RequestParams = {}) =>
       this.request<ApiStockResponse[], AppException>({
         path: `/v1/stocks/list`,
         method: "POST",
         body: data,
+        secure: true,
         type: ContentType.Json,
         format: "json",
         ...params,
@@ -1105,12 +1277,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name CreateStock
      * @summary Создать акцию
      * @request POST:/v1/stocks/
+     * @secure
      */
     createStock: (data: ApiStockRequest, params: RequestParams = {}) =>
       this.request<ApiStockResponse, AppException>({
         path: `/v1/stocks/`,
         method: "POST",
         body: data,
+        secure: true,
         type: ContentType.Json,
         format: "json",
         ...params,
@@ -1121,14 +1295,16 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags Записи аренды
      * @name FindAllByFilter2
-     * @summary Получить список Items в аренде
-     * @request POST:/v1/rents/list/
+     * @summary Получить фильтрованный список аренды
+     * @request POST:/v1/rents/list
+     * @secure
      */
     findAllByFilter2: (data: ApiRentFilterRequest, params: RequestParams = {}) =>
       this.request<ApiDailyRentResponse, AppException>({
-        path: `/v1/rents/list/`,
+        path: `/v1/rents/list`,
         method: "POST",
         body: data,
+        secure: true,
         type: ContentType.Json,
         format: "json",
         ...params,
@@ -1141,12 +1317,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name FindAllByFilter3
      * @summary Получить список Items
      * @request POST:/v1/items/list
+     * @secure
      */
-    findAllByFilter3: (data: ApiFilterRequest, params: RequestParams = {}) =>
+    findAllByFilter3: (data: ApiItemFilterRequest, params: RequestParams = {}) =>
       this.request<ApiItemResponse[], AppException>({
         path: `/v1/items/list`,
         method: "POST",
         body: data,
+        secure: true,
         type: ContentType.Json,
         format: "json",
         ...params,
@@ -1159,11 +1337,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name GetFile
      * @summary Получить файл
      * @request GET:/v1/items/img/{id}
+     * @secure
      */
     getFile: (id: string, params: RequestParams = {}) =>
       this.request<string, AppException>({
         path: `/v1/items/img/${id}`,
         method: "GET",
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -1175,6 +1355,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name UploadFile
      * @summary Загрузить файл
      * @request POST:/v1/items/img/{id}
+     * @secure
      */
     uploadFile: (
       id: string,
@@ -1188,6 +1369,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         path: `/v1/items/img/${id}`,
         method: "POST",
         body: data,
+        secure: true,
         type: ContentType.FormData,
         format: "json",
         ...params,
@@ -1200,12 +1382,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name CreateItem
      * @summary Создать Item
      * @request POST:/v1/items/
+     * @secure
      */
     createItem: (data: ApiItemRequest, params: RequestParams = {}) =>
       this.request<ApiItemResponse, AppException>({
         path: `/v1/items/`,
         method: "POST",
         body: data,
+        secure: true,
         type: ContentType.Json,
         format: "json",
         ...params,
@@ -1218,12 +1402,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name FindAllByFilter4
      * @summary Получить список типов
      * @request POST:/v1/item-types/list
+     * @secure
      */
     findAllByFilter4: (data: ApiFilterRequest, params: RequestParams = {}) =>
       this.request<ApiItemTypeResponse[], AppException>({
         path: `/v1/item-types/list`,
         method: "POST",
         body: data,
+        secure: true,
         type: ContentType.Json,
         format: "json",
         ...params,
@@ -1236,12 +1422,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name CreateType
      * @summary Создать тип
      * @request POST:/v1/item-types/
+     * @secure
      */
     createType: (data: ApiItemTypeRequest, params: RequestParams = {}) =>
       this.request<ApiItemTypeResponse, AppException>({
         path: `/v1/item-types/`,
         method: "POST",
         body: data,
+        secure: true,
         type: ContentType.Json,
         format: "json",
         ...params,
@@ -1253,13 +1441,73 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @tags esp-controller
      * @name PostData
      * @request POST:/v1/esp/data/
+     * @secure
      */
     postData: (data: ApiDataRequest, params: RequestParams = {}) =>
       this.request<string, any>({
         path: `/v1/esp/data/`,
         method: "POST",
         body: data,
+        secure: true,
         type: ContentType.Json,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Account
+     * @name ResetPassword
+     * @summary Account reset password
+     * @request POST:/v1/account/resetPassword
+     * @secure
+     */
+    resetPassword: (data: ApiResetPasswordRequest, params: RequestParams = {}) =>
+      this.request<ApiAccountResponse, AppException>({
+        path: `/v1/account/resetPassword`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Account
+     * @name Login
+     * @request POST:/v1/account/login
+     * @secure
+     */
+    login: (data: ApiAuthRequest, params: RequestParams = {}) =>
+      this.request<string, any>({
+        path: `/v1/account/login`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Account
+     * @name ChangePassword
+     * @summary Account change password
+     * @request POST:/v1/account/changePassword
+     * @secure
+     */
+    changePassword: (data: ApiChangePasswordRequest, params: RequestParams = {}) =>
+      this.request<ApiAccountResponse, AppException>({
+        path: `/v1/account/changePassword`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
         ...params,
       }),
 
@@ -1268,12 +1516,16 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags Записи аренды
      * @name GetRentItem
+     * @summary Запись аренды
      * @request GET:/v1/rents/{id}/
+     * @secure
      */
     getRentItem: (id: string, params: RequestParams = {}) =>
-      this.request<ApiRentResponse, any>({
+      this.request<ApiRentResponse, AppException>({
         path: `/v1/rents/${id}/`,
         method: "GET",
+        secure: true,
+        format: "json",
         ...params,
       }),
 
@@ -1283,11 +1535,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @tags esp-controller
      * @name Status
      * @request GET:/v1/esp/status/
+     * @secure
      */
     status: (params: RequestParams = {}) =>
       this.request<boolean, any>({
         path: `/v1/esp/status/`,
         method: "GET",
+        secure: true,
         ...params,
       }),
 
@@ -1297,11 +1551,31 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @tags esp-controller
      * @name Ping
      * @request GET:/v1/esp/ping/
+     * @secure
      */
     ping: (params: RequestParams = {}) =>
       this.request<string, any>({
         path: `/v1/esp/ping/`,
         method: "GET",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Account
+     * @name InfoAccount
+     * @summary Account info
+     * @request GET:/v1/account/info
+     * @secure
+     */
+    infoAccount: (params: RequestParams = {}) =>
+      this.request<ApiAccountResponse, AppException>({
+        path: `/v1/account/info`,
+        method: "GET",
+        secure: true,
+        format: "json",
         ...params,
       }),
   };

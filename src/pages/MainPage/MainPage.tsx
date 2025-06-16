@@ -1,7 +1,7 @@
 import './MainPage.scss';
 import block from 'bem-cn-lite';
-import React, {useEffect, useState, useContext, useMemo} from 'react';
-import {Outlet} from 'react-router';
+import React, {useEffect, useState, useContext} from 'react';
+import {Outlet, useNavigate} from 'react-router';
 import {Loader} from '@gravity-ui/uikit';
 import {Footer} from '@components/Footer';
 import {Header} from '@components/Header/Header';
@@ -9,18 +9,27 @@ import {api} from '@services/api';
 import {RentItem, User} from '@services/types';
 import {AppContext} from '@context/Context';
 import {cacheImage, dbPromise} from '@context/IndexDB'
+import {state} from 'lit/decorators.js';
 
 const b = block('main-page');
 
 export function MainPage() {
-  const {state: {rentConfig: {reloadPage}}, setState} = useContext(AppContext);
+  const {state: {rentConfig: {reloadPage}, user}, setState} = useContext(AppContext);
   const [showLoader, setShowLoader] = useState(true);
   const [timeUpdate, setTimeUpdate] = useState(10000);
+  const navigate = useNavigate();
 
-  //Сортировка Сначала показываем не оплаченные, потом оплаченные
+  //проверка токена
+  useEffect(() => {
+    if (!user.token) {
+      navigate('/login')
+    }
+  }, [])
+
+  //Сортировка cначала показываем не оплаченные, потом оплаченные
   const sortRentItems = (items: RentItem[]) => {
-    const noPay = items.filter((item) => item.status === 'NEW' || item.status === 'NO_PAY');
-    const pay = items.filter((item) => item.status === 'PAY');
+    const noPay = items.filter((item) => item.status === 'ACTIVE' || item.status === 'WAIT_PAYMENT');
+    const pay = items.filter((item) => item.status === 'PAID');
 
     return ([...noPay, ...pay])
   }
@@ -41,13 +50,16 @@ export function MainPage() {
         size: 1000
       })
       .then((response) => {
-        const user = response.data?.activeUser as User;
+        const userRes = response.data?.activeUser as User;
         const items = response.data.rents?.content as RentItem[];
 
         setState({
-          user: user,
-          rentItems: sortRentItems(items),
-          rentConfig:{reloadPage:false}
+          user: {
+            ...user,
+            ...userRes
+          },
+          rentItems: items,
+          rentConfig: {reloadPage: false}
         });
 
         setShowLoader(false);
@@ -70,11 +82,17 @@ export function MainPage() {
 
   return (
     <div className={b()}>
-      <Header />
-      {showLoader
-        ? <Loader size='l' className={b('loader')} />
-        : <Outlet />}
-      <Footer />
+      {!user.token ?
+        null
+        :
+        <>
+          <Header />
+          {showLoader
+            ? <Loader size='l' className={b('loader')} />
+            : <Outlet />}
+          <Footer />
+        </>
+      }
     </div>
   );
 }

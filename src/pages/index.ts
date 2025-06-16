@@ -4,4 +4,4 @@ export * from './LoginPage/LoginPage';
 export * from './MainPage/MainPage';
 export * from './RentPage/RentPage';
 export * from './RentPage/RentPage';
-export * from './AuthPage/';
+export * from './AuthPage/AuthPage';

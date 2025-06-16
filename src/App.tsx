@@ -28,11 +28,11 @@ export function App() {
     <AppContext.Provider value={{state, setState: updateState}}>
       <ThemeProvider theme="light">
         <Routes>
-          <Route path="/" element={<AuthPage/>}>
-          {/* <Route path="/" element={<MainPage />}> */}
+          <Route path="/login" element={<AuthPage />} />
+          <Route path="/" element={<MainPage />}>
             <Route index element={<RentPage />} />
             <Route path="inventory" element={<InventoryPage />} />
-          <Route path="users" element={<LoginPage />} />
+            <Route path="users" element={<LoginPage />} />
           </Route>
           <Route path="/admin" element={<AdminPage />} >
             <Route index element={<TableInventors />} />

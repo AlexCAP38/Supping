@@ -1,10 +1,13 @@
-import {ApiItemResponse, ApiRentResponse, ApiUserResponse} from '@services/supping-api';
+import {ApiAccountResponse, ApiItemResponse, ApiRentResponse, ApiUserResponse} from '@services/supping-api';
 
-type StatusRent = 'HOME' | 'RENTED_OUT' | 'NO_ACTIVE' | 'DELETE';
+type StatusRent = ApiItemResponse['status'];
 
-export type StatusItem = 'NEW' | 'ERROR' | 'PAY' | 'NO_PAY' | 'DELETED' | 'DELETE_SHORT_TIME';
+export type StatusItem = ApiRentResponse['status'];
 
-export interface User extends ApiUserResponse {};
+export interface User extends ApiUserResponse {
+    token?: string | null | undefined;
+    role?: ApiAccountResponse['role'];
+};
 
 export interface NewUser {
     firstName: string,

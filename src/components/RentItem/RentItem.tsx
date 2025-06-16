@@ -49,13 +49,13 @@ export const RentItem: FC<RentItemProps> = ({rentItem, closeItem}) => {
 
     function checkStatus(status: StatusItem) {
         switch (status) {
-            case 'NO_PAY':
+            case 'WAIT_PAYMENT':
                 return 'no-pay'
                 break;
-            case 'PAY':
+            case 'PAID':
                 return 'pay'
                 break;
-            case 'NEW':
+            case 'ACTIVE':
                 return 'new'
                 break;
         }
@@ -106,7 +106,7 @@ export const RentItem: FC<RentItemProps> = ({rentItem, closeItem}) => {
                     <div className={b('cost')}>
                         <img src={wallet} />
                         <Text className={b('summa')}>{
-                            status === 'PAY' ? rentCostFact : rentCost
+                            status === 'PAID' ? rentCostFact : rentCost
                         }</Text>
                     </div>
                     <img className={b('battery', {show: lowEnergy && !!auto})} src={battery} />
