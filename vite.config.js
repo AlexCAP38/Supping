@@ -3,6 +3,10 @@ import path from 'path';
 import react from '@vitejs/plugin-react';
 
 export default defineConfig({
+    server: {
+    host: '0.0.0.0',  // слушать все IP
+    port: 5173,        // или другой нужный порт
+  },
   plugins: [react()],
   resolve: {
     alias: {

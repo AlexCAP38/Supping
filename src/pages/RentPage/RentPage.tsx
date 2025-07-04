@@ -8,7 +8,6 @@ const b = block('rent-page');
 
 export function RentPage() {
   const {state: {rentItems}, setState} = useContext(AppContext);
-    const closingRef = useRef(false);
 
   return (
     <div className={b()}>
@@ -16,7 +15,6 @@ export function RentPage() {
         <RentItem
           key={item.id}
           rentItem={item}
-          closeItem={closingRef}
         />
       )}
     </div>

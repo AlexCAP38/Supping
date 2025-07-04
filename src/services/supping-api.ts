@@ -42,10 +42,17 @@ export interface ApiUserResponse {
    * @max 50
    */
   lastName?: string;
+  /**
+   * Логин
+   * @min 3
+   * @max 50
+   */
+  login?: string;
   /** Активный */
   active?: boolean;
   /**
    * Сумма заработанная за день
+   * @format double
    * @min 1
    */
   totalValue?: number;
@@ -214,6 +221,17 @@ export interface ApiStartRentRequest {
    * @example "00:00:00"
    */
   startTime: string;
+  /**
+   * Время начала аренды
+   * @format double
+   */
+  preRentCost: number;
+  /**
+   * Описание
+   * @min 0
+   * @max 2048
+   */
+  description?: string;
 }
 
 export interface ApiItemResponse {
@@ -244,7 +262,7 @@ export interface ApiItemResponse {
   /** Тип инвентаря */
   type?: ApiItemTypeResponse;
   /** Статус инвентаря */
-  status?: "HOME" | "PRE_RENT" | "RENTED" | "NO_ACTIVE" | "DELETE";
+  status?: "HOME" | "PRE_RENT" | "RENTED" | "DISABLED" | "DELETE";
   /**
    * Текущее напряжения в mV
    * @format int32
@@ -301,7 +319,7 @@ export interface ApiRentResponse {
    */
   rentCost?: number;
   /**
-   * Оплаченная сумма аренды
+   * Фактическая оплаченная сумма аренды
    * @format double
    * @min 1
    */
@@ -312,6 +330,12 @@ export interface ApiRentResponse {
    * @min 1
    */
   preRentCost?: number;
+  /**
+   * Сумма к оплате аренды
+   * @format double
+   * @min 1
+   */
+  totalRentCost?: number;
   /**
    * Таймстемп записи
    * @format date-time
@@ -325,6 +349,11 @@ export interface ApiPreRentRequest {
    * @format double
    */
   preRentCost: number;
+  /**
+   * Описание
+   * @min 0
+   * @max 2048
+   */
   description?: string;
 }
 
@@ -403,10 +432,7 @@ export interface ApiItemTypeRequest {
 export interface ApiUserUpdateRequest {
   firstName?: string;
   lastName?: string;
-  patronymic?: string;
-  department?: string;
   email?: string;
-  messenger?: string;
 }
 
 export interface ApiAccountResponse {
@@ -532,15 +558,35 @@ export interface ApiRentFilterRequest {
   size: number;
 }
 
+/** Назначенный пользователь в данный момент */
+export interface ApiActiveUserResponse {
+  /**
+   * Имя
+   * @min 3
+   * @max 50
+   */
+  firstName?: string;
+  /**
+   * Фамилия
+   * @min 3
+   * @max 50
+   */
+  lastName?: string;
+}
+
 export interface ApiDailyRentResponse {
-  activeUser?: ApiUserResponse;
+  userInfo?: ApiUserResponse;
+  /** Назначенный пользователь в данный момент */
+  assignedUser?: ApiActiveUserResponse;
   /**
    * Текущая дата
    * @format date-time
+   * @example "2020-02-28T12:12:12Z"
    */
   day?: string;
   /**
    * Общая стоимость
+   * @format double
    * @min 1
    */
   totalCost?: number;
@@ -560,11 +606,11 @@ export interface PageApiRentResponse {
   /** @format int32 */
   number?: number;
   sort?: SortObject[];
-  pageable?: PageableObject;
-  /** @format int32 */
-  numberOfElements?: number;
   first?: boolean;
   last?: boolean;
+  /** @format int32 */
+  numberOfElements?: number;
+  pageable?: PageableObject;
   empty?: boolean;
 }
 
@@ -572,12 +618,12 @@ export interface PageableObject {
   /** @format int64 */
   offset?: number;
   sort?: SortObject[];
-  /** @format int32 */
-  pageNumber?: number;
-  /** @format int32 */
-  pageSize?: number;
   paged?: boolean;
   unpaged?: boolean;
+  /** @format int32 */
+  pageSize?: number;
+  /** @format int32 */
+  pageNumber?: number;
 }
 
 export interface SortObject {
@@ -598,7 +644,7 @@ export interface ApiItemFilterRequest {
    */
   search?: string;
   /** инвентаря */
-  itemStatus?: "HOME" | "PRE_RENT" | "RENTED" | "NO_ACTIVE" | "DELETE";
+  itemStatus?: "HOME" | "PRE_RENT" | "RENTED" | "DISABLED" | "DELETE";
 }
 
 export interface ApiItemRequest {
@@ -1218,12 +1264,12 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @tags Пользователи
      * @name SetActiveUser
      * @summary Сделать пользователя активным
-     * @request POST:/v1/users/active/{id}
+     * @request POST:/v1/users/assignYourself
      * @secure
      */
-    setActiveUser: (id: string, params: RequestParams = {}) =>
+    setActiveUser: (params: RequestParams = {}) =>
       this.request<ApiUserResponse, AppException>({
-        path: `/v1/users/active/${id}`,
+        path: `/v1/users/assignYourself`,
         method: "POST",
         secure: true,
         format: "json",

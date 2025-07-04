@@ -1,7 +1,7 @@
-import {InventoryItem, RentItem, User} from '@services/types';
-import {ApiItemTypeResponse} from '@services/supping-api';
+import {User} from '@services/types';
+import {ApiItemTypeResponse,ApiItemResponse, ApiRentResponse} from '@services/supping-api';
 import {createContext} from 'react';
-import {initUser} from './InitState';
+import {initUser} from './InitUser';
 
 export interface Context {
     state: State;
@@ -10,11 +10,12 @@ export interface Context {
 
 export interface State {
     user: User;
-    rentItems: RentItem[];
-    rentConfig:{
+    rentItems: ApiRentResponse[];
+    options:{
         reloadPage:boolean;
+        closingModal: boolean;
     };
-    inventoryItems: InventoryItem[];
+    inventoryItems: ApiItemResponse[];
     itemTypes: ApiItemTypeResponse[]
 };
 
@@ -22,8 +23,9 @@ export const defaultState: Context = {
     state: {
         user: initUser,
         rentItems: [],
-        rentConfig:{
-            reloadPage:false
+        options:{
+            reloadPage:false,
+            closingModal: false,
         },
         inventoryItems:[],
         itemTypes:[],

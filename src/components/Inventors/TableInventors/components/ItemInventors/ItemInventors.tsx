@@ -55,7 +55,7 @@ export function ItemInventors({className, item, itemCurrent, showModalInventors,
               setDisableItem(item.id!)
             }
             } />}
-        {item.status === 'NO_ACTIVE' &&
+        {item.status === 'DISABLED' &&
           <Checkbox
             size='l'
             checked={false}

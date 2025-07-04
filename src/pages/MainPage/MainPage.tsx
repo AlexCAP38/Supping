@@ -6,39 +6,25 @@ import {Loader} from '@gravity-ui/uikit';
 import {Footer} from '@components/Footer';
 import {Header} from '@components/Header/Header';
 import {api} from '@services/api';
-import {RentItem, User} from '@services/types';
 import {AppContext} from '@context/Context';
 import {cacheImage, dbPromise} from '@context/IndexDB'
-import {state} from 'lit/decorators.js';
+import {ApiActiveUserResponse, ApiRentResponse} from '@services/supping-api';
+import {User} from '@services/types';
+import {tokenStorage} from '@utils/tokenStorage';
 
 const b = block('main-page');
 
 export function MainPage() {
-  const {state: {rentConfig: {reloadPage}, user}, setState} = useContext(AppContext);
+  const {state, setState} = useContext(AppContext);
+  const {options: {reloadPage}, user} = state;
   const [showLoader, setShowLoader] = useState(true);
   const [timeUpdate, setTimeUpdate] = useState(10000);
   const navigate = useNavigate();
-
-  //проверка токена
-  useEffect(() => {
-    if (!user.token) {
-      navigate('/login')
-    }
-  }, [])
-
-  //Сортировка cначала показываем не оплаченные, потом оплаченные
-  const sortRentItems = (items: RentItem[]) => {
-    const noPay = items.filter((item) => item.status === 'ACTIVE' || item.status === 'WAIT_PAYMENT');
-    const pay = items.filter((item) => item.status === 'PAID');
-
-    return ([...noPay, ...pay])
-  }
 
   const fetchData = () => {
     //Получаем весь список арендованного инвентаря
     api.v1.findAllByFilter2(
       {
-        // сортировка пока не нужна
         sort: {
           field: "createdAt",
           direction: 'DESC'
@@ -50,34 +36,49 @@ export function MainPage() {
         size: 1000
       })
       .then((response) => {
-        const userRes = response.data?.activeUser as User;
-        const items = response.data.rents?.content as RentItem[];
+        const userInfo = response.data?.userInfo as User;
+        const assignedUser = response.data?.assignedUser as ApiActiveUserResponse;
+        const items = response.data.rents?.content as ApiRentResponse[];
 
         setState({
           user: {
-            ...user,
-            ...userRes
+            ...state.user,
+            ...userInfo,
+            assignedUser: assignedUser
           },
-          rentItems: items,
-          rentConfig: {reloadPage: false}
+          rentItems: items ? items : [],
+          options: {
+            ...state.options,
+            reloadPage: false
+          }
         });
 
         setShowLoader(false);
 
-        items.forEach((item) => item.item.image && cacheImage(item.item.image))
+        items.forEach((item) => item?.item?.image && cacheImage(item.item.image))
       })
-      .catch(() => {
-        //TODO: добавить обработку ошибок (например, модальное окно)
+      .catch((error) => {
+        // TODO: добавить обработку ошибок (например, модальное окно)
+        if (error.status === 401 || error.status === 403) {
+          //Удаляем все токены, они не валидные
+          tokenStorage.clear();
+          navigate('/login')
+        }
         console.log('Не удалось получить данные');
       });
   };
 
-  //Таймер обновления
-  //Следим за флагом обновления страницы
   useEffect(() => {
-    fetchData();
-    const intervalId = setInterval(fetchData, timeUpdate);
-    return () => clearInterval(intervalId);
+    //проверка токена
+    if (!user.token) {
+      navigate('/login')
+    } else {
+      //Таймер обновления
+      //Следим за флагом обновления страницы
+      fetchData();
+      const intervalId = setInterval(fetchData, timeUpdate);
+      return () => clearInterval(intervalId);
+    }
   }, [timeUpdate, reloadPage]);
 
   return (

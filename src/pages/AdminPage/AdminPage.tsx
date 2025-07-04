@@ -38,6 +38,16 @@ export function AdminPage() {
       id: 'types',
       title: 'Типы инвентаря',
       onItemClick: () => navigation('types')
+    },
+    {
+      id: 'users',
+      title: 'Пользователи',
+      onItemClick: () => navigation('users')
+    },
+    {
+      id: 'report',
+      title: 'Отчет',
+      onItemClick: () => navigation('report')
     }
   ]
 

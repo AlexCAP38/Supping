@@ -3,9 +3,9 @@ import {Route, Routes} from 'react-router-dom';
 import {ThemeProvider} from '@gravity-ui/uikit';
 import {AppContext, defaultState, State} from '@context/Context';
 import {
-  AuthPage,
-  AdminPage,
   LoginPage,
+  AdminPage,
+  UserPage,
   MainPage,
   RentPage,
   InventoryPage
@@ -13,6 +13,8 @@ import {
 import {TableInventors} from '@components/Inventors/TableInventors/TableInventors';
 import {TableStock} from '@components/Inventors/TableStock/TableStock';
 import {TableTypes} from '@components/Inventors/TableTypes/TableTypes';
+import {TableUsers} from '@components/Inventors/TableUsers/TableUsers';
+import {TableReport} from '@components/Inventors/TableReport/TableReport';
 
 export function App() {
   const [state, setState] = useState<State>(defaultState.state);
@@ -28,17 +30,19 @@ export function App() {
     <AppContext.Provider value={{state, setState: updateState}}>
       <ThemeProvider theme="light">
         <Routes>
-          <Route path="/login" element={<AuthPage />} />
+          <Route path="/login" element={<LoginPage />} />
           <Route path="/" element={<MainPage />}>
             <Route index element={<RentPage />} />
             <Route path="inventory" element={<InventoryPage />} />
-            <Route path="users" element={<LoginPage />} />
+            <Route path="user" element={<UserPage />} />
           </Route>
           <Route path="/admin" element={<AdminPage />} >
             <Route index element={<TableInventors />} />
             <Route path="inventors" element={<TableInventors />} />
             <Route path="stocks" element={<TableStock />} />
             <Route path="types" element={<TableTypes />} />
+            <Route path="users" element={<TableUsers />} />
+            <Route path="report" element={<TableReport />} />
           </Route>
         </Routes>
       </ThemeProvider>

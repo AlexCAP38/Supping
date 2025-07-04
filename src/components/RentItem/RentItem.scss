@@ -20,7 +20,7 @@ $block: '.rent-item';
                 width: 100px;
                 height: 100px;
                 // height: auto;
-                object-fit:cover;
+                object-fit: cover;
                 // overflow: hidden;
             }
 
@@ -190,14 +190,21 @@ $block: '.rent-item';
     background-color: #f0f0f0;
 }
 
-.no-pay {
+.wait-payment {
     background-color: $nopay;
 }
 
-.pay {
+.paid {
     background-color: $pay;
 }
 
-.new {
+.active {
     background-color: $new;
+}
+
+.hold {
+    background-color: transparent;
+    border-top: 1px solid rgba(0, 0, 0, 0.4);
+    border-left: 1px solid rgba(0, 0, 0, 0.4);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.4);
 }

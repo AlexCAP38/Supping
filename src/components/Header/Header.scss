@@ -20,6 +20,12 @@ $block: '.header';
         font-size: 20px;
     }
 
+    #{$block}__text_status {
+        text-decoration-line: line-through;
+        text-decoration-thickness: 3px;
+        text-decoration-color: red;
+    }
+
     #{$block}__status-btn {
         border-radius: 50% 50%;
         width: 25px;

@@ -45,9 +45,8 @@ export const Header: FC = () => {
             month
         }.
         {year}</Text>
-      {/* <button className={b('status-btn')}></button> */}
-      <Link className={b('link')} to='/users'>
-        <Text className={b('text')}>{returnActiveUser()}</Text>
+      <Link className={b('link')} to='/user'>
+        <Text className={b('text',{status:!user.active})}>{returnActiveUser()}</Text>
       </Link>
     </div>
   )

@@ -1,4 +1,4 @@
-import {api} from "@services/api";
+import {api} from '@services/api';
 import {openDB} from "idb";
 
 //Создание базы IDB
@@ -20,8 +20,6 @@ export const cacheImage = async (id: string) => {
         .then((response) => {
             db.put("images", response.data, id);
         })
-
-
 };
 
 

@@ -1,86 +1,124 @@
-import React, {useEffect, useState} from 'react';
-import monkey from '@assets/users/monkey.gif';
-import cat from '@assets/users/cat.gif';
-import block from 'bem-cn-lite';
-import {UserLabel, Button} from '@gravity-ui/uikit';
-import {ModalNewUser} from './components/Modal';
-import {Plus, ArrowUturnCcwLeft} from '@gravity-ui/icons';
-import {getUsers, setUserActive} from '@services/api';
-import {User} from '@services/types';
 import './LoginPage.scss';
-import {useNavigate} from 'react-router-dom';
+import block from 'bem-cn-lite';
+import {TextInput, Button, Link, Checkbox} from '@gravity-ui/uikit';
+import React, {useContext, useEffect, useState} from 'react';
+import {api} from '@services/api';
+import {tokenStorage} from '@utils/tokenStorage';
+import {useNavigate} from 'react-router';
+import {AppContext} from '@context/Context';
+import logo from '@assets/favicon/sup.svg';
+import {jwtDecode} from "jwt-decode";
+import {JWT} from '@context/InitUser';
 
-const b = block('container');
+const b = block('authorization');
 
 export function LoginPage() {
-  const [users, setUsers] = useState<User[]>([]);
-  const [showModalAddUser, setShowModalAddUser] = useState(false);
-  const navigate = useNavigate();
+    const {state, setState} = useContext(AppContext);
+    const [login, setLogin] = useState('');
+    const [password, setPassword] = useState('');
+    const [hasError, setHasError] = useState(false);
+    const [rememberMe, setRememberMe] = useState(false);
+    const [logError, setLogError] = useState('');
+    const navigate = useNavigate();
 
-  //TODO Оптимизировать количество обращений Хранить данные в контексте
-
-  useEffect(() => {
-    getUsers()
-      .then((data) => {
-        setUsers(data);
-      })
-      .catch(() => {
-        console.log('ВКЛючи СЕРВЕР');
-      })
-  }, []);
-
-  useEffect(() => {
-  }, [users, showModalAddUser]);
-
-  async function handleActiveUser(user: User) {
-    if (user.active) {
-      // добавить логику для деактивации пользователя, если это требуется
-    } else {
-      try {
-
-//ИСПРАВИТЬ !!!
-        await setUserActive(user.id!);
-        const updatedUsers = await getUsers();
-        setUsers(updatedUsers);
-      } catch (error) {
-        //можно добавить модалку с ошибкой
-        console.error('Ошибка при активации пользователя:', error);
-      }
+    //Проверка инпутов на пустоут
+    const validateInput = () => {
+        if (!login || !password) {
+            setHasError(true);
+            return false
+        }
+        setHasError(false);
+        return true
     }
-  }
 
-  function handleAddUser() {
-    setShowModalAddUser(true);
-  }
+    useEffect(() => {
+        validateInput()
+    }, [login, password])
 
-  return (
-    <div className={b()}>
-      {users.map((user) => {
-        return (
-          <UserLabel
-            key={user.id}
-            className={b('card', {active: !user.active ? true : false})}
-            type='person'
-            avatar={user.active ? monkey : cat}
-            size='xl'
-            onClick={() => {handleActiveUser(user)}}
-            text={user.firstName === user.lastName ? `${user.firstName}` : `${user.firstName} ${user.lastName}`}
-          />
-        )
-      })}
+    // useEffect(() => {
+    //     // state.user.token && navigate('/');
+    // }, [])
 
-      <Button
-        onClick={handleAddUser}
-        pin="circle-circle"
-        selected
-        className={b('btn-add-user')}>
-        <Plus />
-      </Button>
+    const sendAuth = () => {
+        //сбросим ошибку авторизации
+        setLogError('')
 
-      <ModalNewUser
-        showModal={showModalAddUser}
-        closeModal={() => setShowModalAddUser(false)}
-      />
-    </div>
-  );
+        api.v1.login({
+            login: login,
+            password: password
+        })
+            .then((response) => {
+                if ("access-token" in response.headers) {
+                    const token = response.headers['access-token']
+                    const decoded: JWT = jwtDecode(token);
+
+                    //Сохранение токена
+                    rememberMe ? tokenStorage.setLocal(token) : tokenStorage.setSession(token);
+
+                    setState({
+                        user: {
+                            ...state.user,
+                            token: token,
+                            role: decoded.role
+                        }
+                    });
+
+                    navigate('/');
+                } else console.error('В заголовке нету access-token')
+            })
+            .catch((error) => {
+                if (error.status === 403) {
+                    setLogError(`Неверный логин/пароль`)
+                } else {
+                    setLogError(`Ошибка, код: ${error.status}`)
+                    console.log('Ошибка, код: ', error);
+                }
+            });
+    }
+
+    return (
+        <div className={b()}>
+            <div className={b('logo')}>
+                <img src={logo} alt="logo" />
+            </div>
+            <div className={b('label')}>Логин</div>
+            <TextInput
+                className={b('input')}
+                size='xl'
+                onChange={(event) => setLogin(event.target.value.trim())}
+                type='text'
+            />
+            <div className={b('label')}>Пароль</div>
+            <TextInput
+                className={b('input')}
+                size='xl'
+                onChange={(event) => setPassword(event.target.value.trim())}
+                type='password'
+            />
+            <div className={b('container')}>
+                <Checkbox
+                    size='l'
+                    onChange={() => setRememberMe(prevState => !prevState)}
+                    className={b('checkbox')}
+                >
+                    Запомнить
+                </Checkbox>
+                <Link
+                    href='#'
+                    className={b('link')}
+                >
+                    Забыли пароль ?
+                </Link>
+            </div>
+            <div className={b('log')}>{logError}</div>
+            <Button
+                className={b('btn')}
+                size='xl'
+                onClick={sendAuth}
+                disabled={hasError}
+            >
+                Авторизоваться
+            </Button>
+        </div>
+    )
 }

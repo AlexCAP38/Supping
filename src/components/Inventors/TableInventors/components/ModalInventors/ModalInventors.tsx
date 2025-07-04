@@ -44,7 +44,7 @@ const initItem: ApiItemResponse = {
     description: '',
     volt: 0,
     lowEnergy: false,
-    status: "NO_ACTIVE",
+    status: 'DISABLED',
     type: {id: ''},
     image: '',
 }

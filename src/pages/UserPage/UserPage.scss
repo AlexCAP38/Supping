@@ -1,0 +1,31 @@
+$block: '.user';
+
+#{$block} {
+    width: inherit;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+
+    #{$block}__table {
+        width: 90%;
+        border: 1px solid black;
+
+        #{$block}__column-first {
+            font-size: 18px;
+        }
+
+        #{$block}__column-second {
+            font-size: 18px;
+            text-align: right;
+        }
+    }
+
+    #{$block}__btn {
+        font-size: 30px;
+        margin-top: 50px;
+    }
+
+}

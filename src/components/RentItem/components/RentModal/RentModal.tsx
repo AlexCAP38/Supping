@@ -4,11 +4,11 @@ import block from 'bem-cn-lite';
 import {Text, Modal, TextArea, TextInput} from '@gravity-ui/uikit';
 import clock from '@assets/clock.svg'
 import {clearInputValue} from '@utils/ClearInputNumber';
-import {api} from "@services/api";
+import {api} from '@services/api';
 import React, {FC, useContext, useEffect, useState} from 'react';
-import {RentItem as RItem, } from "@services/types";
 import wallet from '@assets/wallet.png';
 import {AppContext} from '@context/Context';
+import {ApiRentResponse} from '@services/supping-api';
 
 const b = block('rent-modal');
 
@@ -16,17 +16,28 @@ interface RentModalProps {
     showModal: boolean;
     setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
     idRentItem: string;
-    closeRef: React.MutableRefObject<boolean>;
 }
 
-export const RentModal: FC<RentModalProps> = ({showModal, setShowModal, idRentItem, closeRef}) => {
-    const [item, setItem] = useState<RItem | undefined>(undefined)
-    const [startRent, setStartRent] = useState<{hour: string, minute: string}>({hour: '', minute: ''});
-    const [endRent, setEndRent] = useState<{hour: string, minute: string}>({hour: '', minute: ''});;
-    const [isLoad, setIsLoad] = useState(false);
+interface Time {
+    hour: string,
+    minute: string
+};
+
+const initTime: Time = {hour: '', minute: ''};
+
+export const RentModal: FC<RentModalProps> = ({showModal, setShowModal, idRentItem}) => {
+    const {state, setState} = useContext(AppContext);
+    const [item, setItem] = useState<ApiRentResponse | undefined>(undefined)
+
+    const [startRent, setStartRent] = useState<Time>(initTime);
+    const [endRent, setEndRent] = useState<Time>(initTime);;
+
     const [inputDescription, setInputDescription] = useState('');
     const [inputGetMoney, setInputGetMoney] = useState('');
-    const {state, setState} = useContext(AppContext);
+
+    const [isLoad, setIsLoad] = useState(false);
+
+    const itemStatus = item?.status === 'ACTIVE' ? true : false;
 
     //Получение информации об аренде
     useEffect(() => {
@@ -34,7 +45,7 @@ export const RentModal: FC<RentModalProps> = ({showModal, setShowModal, idRentIt
 
         api.v1.getRentItem(idRentItem)
             .then((response) => {
-                const item = response.data as RItem;
+                const item = response.data;
                 setItem(item);
             })
             .catch((error) => console.log('Не могу получить информацию о аренде', error))
@@ -42,16 +53,17 @@ export const RentModal: FC<RentModalProps> = ({showModal, setShowModal, idRentIt
 
     useEffect(() => {
         if (item?.startTime) {
-            const time = new Date(item?.startTime);
+            const time = new Date(parseFloat(item?.startTime) * 1000);
 
             setStartRent({
                 hour: time.getHours().toString().padStart(2, '0'),
                 minute: time.getMinutes().toString().padStart(2, '0')
             });
+
             if (item.status === 'WAIT_PAYMENT' || item.status === 'PAID') {
                 setEndRent({
-                    hour: new Date(item.endTime).getHours().toString().padStart(2, '0'),
-                    minute: new Date(item.endTime).getMinutes().toString().padStart(2, '0')
+                    hour: new Date(parseFloat(item.endTime || '') * 1000).getHours().toString().padStart(2, '0'),
+                    minute: new Date(parseFloat(item.endTime || '') * 1000).getMinutes().toString().padStart(2, '0')
                 });
 
             } else setEndRent({
@@ -59,14 +71,15 @@ export const RentModal: FC<RentModalProps> = ({showModal, setShowModal, idRentIt
                 minute: new Date().getMinutes().toString().padStart(2, '0')
             });
 
-            setInputGetMoney(item?.rentCost.toString() || '')
+            setInputGetMoney(item?.rentCost?.toString() || '')
+            setInputDescription(item?.description || '')
         }
 
     }, [item])
 
     function handlePay(event: React.MouseEvent) {
         event.stopPropagation();
-        if (!item) return;
+        if (!item?.id) return;
 
         setIsLoad(true)
         api.v1.paymentRent(item.id,
@@ -75,7 +88,12 @@ export const RentModal: FC<RentModalProps> = ({showModal, setShowModal, idRentIt
                 paid: parseFloat(inputGetMoney)
             })
             .then((response) => {
-                setState({rentConfig:{reloadPage:true}})
+                setState({
+                    options: {
+                        ...state.options,
+                        reloadPage: true
+                    }
+                })
                 setIsLoad(false)
                 setShowModal(false);
             })
@@ -87,7 +105,7 @@ export const RentModal: FC<RentModalProps> = ({showModal, setShowModal, idRentIt
 
     function handleStopPay(event: React.MouseEvent) {
         event.stopPropagation();
-        if (!item) return;
+        if (!item?.id) return;
 
         //На сервер отправляем в UTC формате
         const stopTime = new Date();
@@ -95,7 +113,7 @@ export const RentModal: FC<RentModalProps> = ({showModal, setShowModal, idRentIt
 
         api.v1.stopRent(item.id, {endTime: stopTime.toISOString()})
             .then((response) => {
-                setItem(response.data as RItem)
+                setItem(response.data)
             })
             .catch((error) => {
                 //TODO сделать нормальное предупреждение об ошибке
@@ -104,17 +122,25 @@ export const RentModal: FC<RentModalProps> = ({showModal, setShowModal, idRentIt
     }
 
     function handleClose(event: MouseEvent | KeyboardEvent) {
-        closeRef.current = true;
+        setState({
+            options: {
+                ...state.options,
+                closingModal: true
+            }
+        })
+
         event.stopPropagation();
 
         setShowModal(false);
 
         setTimeout(() => {
-            closeRef.current = false;
-        }, 150);
-
-        // setInputGetMoney(item?.rentCost.toString() || '');
-        // setInputDescription('');
+            setState({
+                options: {
+                    ...state.options,
+                    closingModal: false
+                }
+            })
+        }, 100);
     }
 
     return (
@@ -126,11 +152,12 @@ export const RentModal: FC<RentModalProps> = ({showModal, setShowModal, idRentIt
             }}
         >
             <div className={b('modal-container')}>
+
                 <div className="section-title">
-                    <Text className={'title'}>{item?.item.description}</Text>
+                    <Text className={'title'}>{item?.item?.description}</Text>
                     <div className={'invent-number'}>
-                        <span className="first-letters">{item?.item.name?.slice(0, 2)}</span>
-                        <span className="second-letters">{item?.item.name?.slice(2, -1)}</span>
+                        <span className="first-letters">{item?.item?.name?.slice(0, 2)}</span>
+                        <span className="second-letters">{item?.item?.name?.slice(2, -1)}</span>
                     </div>
                 </div>
 
@@ -172,39 +199,38 @@ export const RentModal: FC<RentModalProps> = ({showModal, setShowModal, idRentIt
                 </div>
 
                 <div className={b("section-money")}>
-                    <img className={b('icon-wallet')} src={wallet} />
-                    <TextInput className={b('modal-input', {bgcolor: item?.status === 'ACTIVE'})}
-                        view='clear'
-                        size="xl"
-                        value={inputGetMoney.toString()}
-                        onUpdate={(value) => setInputGetMoney(clearInputValue(value))}
-                        disabled={item?.status === 'ACTIVE'}
-                    />
+                    <div className={b('precost', {visible: !item?.preRentCost})}>{`Предоплата: ${item?.preRentCost} руб`}</div>
+                    <div className={b('rentcost')}>
+                        <img className={b('icon-wallet')} src={wallet} />
+                        <TextInput className={b('input-money', {bgcolor: itemStatus})}
+                            view='clear'
+                            size="xl"
+                            value={inputGetMoney.toString()}
+                            onUpdate={(value) => setInputGetMoney(clearInputValue(value))}
+                            disabled={itemStatus}
+                        />
+                    </div>
                 </div>
 
-                <TextArea className={b('modal-comment')}
+                <TextArea className={b('comment')}
                     view='clear'
                     minRows={3}
                     maxRows={3}
                     placeholder={'Комментарий'}
                     size="xl"
+                    value={inputDescription}
                     onUpdate={(value) => setInputDescription(value)}
-                    disabled={item?.status === 'ACTIVE'}
+                    disabled={itemStatus}
                 />
                 {
                     item?.status === 'ACTIVE' ?
-                        <div className="btn-rent" onClick={(event) => handleStopPay(event)}>
+                        <div className="btn" onClick={(event) => handleStopPay(event)}>
                             Остановить аренду
                         </div>
                         :
-                        item?.status === 'PAID' ?
-                            <div className="btn-rent" onClick={(event) => handlePay(event)}>
-                                ОБновить
-                            </div>
-                            :
-                            <div className="btn-rent" onClick={(event) => handlePay(event)}>
-                                Оплатить
-                            </div>
+                        <div className="btn" onClick={(event) => handlePay(event)}>
+                            {item?.status === 'PAID' ? 'Обновить' : 'Оплатить'}
+                        </div>
                 }
             </div>
         </Modal>

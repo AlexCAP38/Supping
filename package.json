@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://alexcap38.github.io/Supping/",
+  "homepage": "https://front.supping.justwind.ru",
   "scripts": {
     "start": "vite",
     "build": "tsc && vite build",
@@ -15,14 +15,17 @@
     "@bem-react/classname": "^1.6.0",
     "@gravity-ui/components": "^4.0.1",
     "@gravity-ui/navigation": "^3.1.1",
+    "@gravity-ui/table": "^1.10.1",
     "axios": "^1.7.9",
     "bem-cn-lite": "^4.1.0",
     "idb": "^8.0.2",
+    "jwt-decode": "^4.0.0",
     "lit": "^3.1.4",
     "react": "^18.3.1",
     "react-dom": "^18.0.0",
     "react-router": "^6.26.1",
-    "react-router-dom": "^6.26.1"
+    "react-router-dom": "^6.26.1",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@gravity-ui/icons": "^2.2.0",
