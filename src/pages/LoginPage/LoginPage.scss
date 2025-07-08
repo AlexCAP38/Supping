@@ -34,7 +34,19 @@ $block: '.authorization';
         }
     }
 
-    .g-text-input {
+    #{$block}__section-pwd {
+        width: var(--width);
+        position: relative;
+
+        #{$block}__icon-pwd {
+            position: absolute;
+            top: 7px;
+            right: 15px;
+        }
+
+    }
+
+    #{$block}__input {
         width: var(--width);
     }
 

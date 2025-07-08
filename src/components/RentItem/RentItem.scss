@@ -16,12 +16,9 @@ $block: '.rent-item';
             gap: 5px;
 
             #{$block}__image {
-                // box-sizing: border-box;
                 width: 100px;
                 height: 100px;
-                // height: auto;
                 object-fit: cover;
-                // overflow: hidden;
             }
 
             #{$block}__section-title {
@@ -43,7 +40,6 @@ $block: '.rent-item';
                 #{$block}__time {
                     color: $color-black;
                     font-size: 20px;
-                    // margin-top: 2px;
                 }
             }
         }
@@ -63,9 +59,6 @@ $block: '.rent-item';
                 color: $color-black;
 
                 .number {
-                    display: flex;
-                    justify-content: flex-start;
-                    align-items: flex-end;
                     box-sizing: border-box;
 
                     .first {
@@ -74,8 +67,7 @@ $block: '.rent-item';
 
                     .second {
                         font-size: 18px;
-                        line-height: 12px;
-                        margin-left: 2px;
+                        margin-left: 4px;
                         letter-spacing: 0.4px;
                     }
                 }
@@ -129,7 +121,7 @@ $block: '.rent-item';
             }
 
             #{$block}__separator {
-                margin: 7px 5px 0 5px;
+                margin: 4px 5px 0 5px;
                 width: 90px;
                 height: 1px;
                 border: 1px solid $color-black;
@@ -142,42 +134,15 @@ $block: '.rent-item';
     #{$block}__section-description {
         display: flex;
         align-items: center;
-        border: 1px solid $color-blue;
-        border-top: 1px solid $color-blue;
-        border-left: 0 solid $color-blue;
-        border-right: 0 solid $color-blue;
+        border-top: 1px solid $pay;
         height: 29px;
         padding-left: 8px;
         background-color: #fdfdfd;
         font-family: 'Inter', sans-serif;
         font-size: 14px;
-        margin: 0 0 4px;
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
-
-
-        #{$block}__money {
-            border-left: 1px solid $color-blue;
-            border-bottom: 1px solid $color-blue;
-            border-top: 1px solid $color-blue;
-            min-width: 105px;
-            height: 29px;
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-
-            border-radius: 5px 0 0 5px;
-            height: 30px;
-            background-color: #fdfdfd;
-
-            p {
-                font-family: 'bebas', sans-serif;
-                font-size: 26px;
-                margin: 0 8px 0 0;
-            }
-        }
-
     }
 
     #{$block}__section-description_hidden {

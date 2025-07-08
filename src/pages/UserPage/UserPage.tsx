@@ -1,11 +1,12 @@
 import './UserPage.scss';
 import React, {useContext} from 'react';
 import block from 'bem-cn-lite';
-import {Button} from '@gravity-ui/uikit';
+import {Button, Icon} from '@gravity-ui/uikit';
 import {api} from '@services/api';
 import {AppContext} from '@context/Context';
 import {useNavigate} from 'react-router-dom';
 import {tokenStorage} from '@utils/tokenStorage';
+import {ArrowRightFromSquare} from '@gravity-ui/icons';
 
 const b = block('user');
 
@@ -35,7 +36,7 @@ export function UserPage() {
 
   function handleLogoff() {
     tokenStorage.clear();
-    // navigate('/');
+    navigate('/login');
   }
 
   return (
@@ -66,6 +67,7 @@ export function UserPage() {
         onClick={() => handleLogoff()}
       >
         Выйти
+        <Icon data={ArrowRightFromSquare} size={30}/>
       </Button>
     </div>
   );

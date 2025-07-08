@@ -49,7 +49,8 @@ export function TableUsers() {
             >
                 Список пользователей
             </Text>
-            <div className={b("columns-name", "grid-table")}>
+            <div className={b("columns-name")}>
+                <div>Логин</div>
                 <div>Наименование</div>
                 <div>На смене</div>
                 <div>ЗП за сегодня</div>

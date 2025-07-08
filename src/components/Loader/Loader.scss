@@ -1,0 +1,59 @@
+$block: '.loader';
+
+#{$block} {
+    position:relative;
+    width: 100%;
+    height: 100%;
+    // background-color: rgba($color: #ffffff, $alpha: .6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2;
+
+    .content {
+        position: relative;
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        background: linear-gradient(#00FF00, #00FF00, #00FF00);
+        animation: animate 1s linear infinite;
+    }
+
+    @keyframes animate {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    .content span {
+        position: absolute;
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        background: linear-gradient(#00b2ff, #00ffbb, #6bff6b);
+
+    }
+
+    .content span:nth-child(1) {
+        filter: blur(5px);
+    }
+
+    .content span:nth-child(2) {
+        filter: blur(10px);
+    }
+
+    .content::after {
+        content: "";
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        right: 15px;
+        bottom: 15px;
+        background: white;
+        border-radius: 50%;
+    }
+}

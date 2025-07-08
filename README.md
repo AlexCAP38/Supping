@@ -1,21 +1,21 @@
-# Коммерческие проект "Административная панель"
+# Коммерческие проект "Аренда САПов"
 
-Стек: HTML, SCSS, TS, Vite
+Стек: HTML, SCSS, TS, Vite, React, React-Router, PWA, Swagger TypeScript API
 
 Структура проекта:
 - src/ — исходные файлы проекта
-- src/components/ — папка с JS компонентами
-- src/components/base/ — папка с базовым кодом
-
-Важные файлы:
-- src/pages/index.html — HTML-файл главной страницы
-- src/types/index.ts — файл с типами
-- src/index.ts — точка входа приложения
-- src/styles/styles.scss — корневой файл стилей
-- src/utils/constants.ts — файл с константами
-- src/utils/utils.ts — файл с утилитами
+- src/components/ — папка с TSX компонентами
+- src/assets/ — медиа файлы
+- src/context/ — контекст
+- src/pages/ — страницы приложения
+- src/services/ — работа с api
+- src/utils/ — кастомные утилиты
+- src/vendor/ — сторонние файлы
 
 ## Установка и запуск
+
+!!! Проект не запуститься без бека
+
 Для установки и запуска проекта необходимо выполнить команды
 
 ```

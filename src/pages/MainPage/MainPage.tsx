@@ -2,7 +2,7 @@ import './MainPage.scss';
 import block from 'bem-cn-lite';
 import React, {useEffect, useState, useContext} from 'react';
 import {Outlet, useNavigate} from 'react-router';
-import {Loader} from '@gravity-ui/uikit';
+import {Loader} from '@components/Loader/Loader';
 import {Footer} from '@components/Footer';
 import {Header} from '@components/Header/Header';
 import {api} from '@services/api';
@@ -89,7 +89,7 @@ export function MainPage() {
         <>
           <Header />
           {showLoader
-            ? <Loader size='l' className={b('loader')} />
+            ? <Loader />
             : <Outlet />}
           <Footer />
         </>

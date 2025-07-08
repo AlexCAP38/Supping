@@ -1,24 +1,15 @@
-import React, {FC, useContext, useEffect, useState} from "react";
-import {Link} from "react-router-dom";
-import block from 'bem-cn-lite';
-import {Button, Card, Modal, Text, Spin} from '@gravity-ui/uikit';
-
 import './Header.scss';
+import block from 'bem-cn-lite';
+import React, {FC, useContext} from "react";
+import {Link} from "react-router-dom";
+import {Text} from '@gravity-ui/uikit';
+
 import {AppContext} from "@context/Context";
 
 const b = block('header');
 
 export const Header: FC = () => {
   const {state: {user}, setState} = useContext(AppContext);
-
-
-  //TODO взять библиотеку или написать функицю для обработки времени
-  const date = new Date(); // Текущая дата
-
-  const day = date.getDate(); // Получаем день
-  const month = date.getMonth() + 1; // Получаем месяц (нужно прибавить 1)
-  const year = date.getFullYear(); // Получаем год
-
 
   function returnActiveUser() {
     if (user) {
@@ -32,21 +23,9 @@ export const Header: FC = () => {
   return (
     <div className={b()}>
       <Text className={b('text')}>
-        {
-          day.toString().length === 1 ?
-            `0${month}`
-            :
-            day
-        }.
-        {
-          month.toString().length === 1 ?
-            `0${month}`
-            :
-            month
-        }.
-        {year}</Text>
+        {new Date().toLocaleDateString('ru-RU')}</Text>
       <Link className={b('link')} to='/user'>
-        <Text className={b('text',{status:!user.active})}>{returnActiveUser()}</Text>
+        <Text className={b('text', {status: !user.active})}>{returnActiveUser()}</Text>
       </Link>
     </div>
   )

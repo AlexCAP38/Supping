@@ -38,24 +38,25 @@ $block: '.rent-modal';
         .invent-number {
             background-color: $color-blue;
             min-width: 110px;
-            height: 50px;
+            height: 45px;
             display: flex;
-            align-items: flex-end;
+            align-items: end;
             padding-left: 10px;
-            padding-bottom: 15px;
+            padding-bottom: 10px;
             box-sizing: border-box;
 
             .first-letters {
+                align-self: end;
                 font-size: 36px;
                 letter-spacing: -1px;
+                padding-bottom: 4.5px;
                 color: $color-black;
             }
 
             .second-letters {
                 color: $color-black;
                 font-size: 20px;
-                line-height: 10px;
-                margin-left: 2px;
+                margin-left: 5px;
                 letter-spacing: 1px;
             }
         }
@@ -97,15 +98,20 @@ $block: '.rent-modal';
             margin: 0 4px;
         }
 
-        .input-time {
+        #{$block}__input-time {
             max-width: 40px;
             font-size: 40px;
             border: 1px solid black;
             text-align: center;
-            // background-color: #D8EBF2;
+            background-color: white;
             border-radius: 5px;
             padding: 0;
             color: $color-black;
+        }
+
+        #{$block}__input-time_border {
+            border: none;
+            background-color: #D8EBF2;
         }
     }
 
@@ -114,48 +120,52 @@ $block: '.rent-modal';
         padding: 0 40px;
 
         #{$block}__precost {
-            text-align: right;
-            font-size: 14px;
-            color: red;
-        }
+            display: flex;
+            opacity: .8;
+            margin-bottom: 10px;
 
-        #{$block}__precost_visible {
-            visibility: hidden;
-        }
+            #{$block}__icon-wallet {
+                width: 30px;
+                align-items: center;
+            }
 
+            #{$block}__content {
+                font-size: 40px;
+                margin: 0 0 0 18px;
+                line-height: 1;
+            }
+
+            #{$block}__content_color {
+                color: #ff0000;
+            }
+        }
 
         #{$block}__rentcost {
             display: flex;
             align-items: baseline;
-            overflow: hidden;
 
             #{$block}__icon-wallet {
-                width: 35px;
+                width: 40px;
             }
 
             #{$block}__input-money {
-                margin-left: 18px;
-
-                input {
-                    font-family: 'Bebas', sans-serif;
-                    letter-spacing: 0.05em;
-                    font-size: 40px !important;
-                    font-weight: 600 !important;
-                    color: $color-black;
-                    border: 1px solid black;
-                    text-align: center;
-                    background-color: white;
-                    border-radius: 5px;
-                }
+                box-sizing: border-box;
+                font-size: 40px;
+                height: 46px;
+                color: $color-black;
+                border: 1px solid $color-black;
+                border-radius: 5px;
+                padding: 0 0 0 4px;
+                width: 100%;
+                margin-left: 9px;
+                background-color: white;
             }
         }
 
         #{$block}__input-money_bgcolor {
-            input {
-                background-color: #D8EBF2;
-            }
+            border: none !important;
+            background-color: transparent !important;
         }
-
     }
 
     #{$block}__comment {
@@ -167,7 +177,7 @@ $block: '.rent-modal';
         }
     }
 
-    .btn {
+    #{$block}__btn {
         height: 70px;
         background-color: $color-blue;
         color: #fff;
@@ -176,5 +186,9 @@ $block: '.rent-modal';
         justify-content: center;
         align-items: center;
         letter-spacing: 2px;
+    }
+
+    #{$block}__btn_margin {
+        margin-top: 10px;
     }
 }

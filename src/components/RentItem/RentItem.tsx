@@ -4,7 +4,7 @@ import React, {FC, useContext, useEffect, useState} from "react";
 import {Text} from '@gravity-ui/uikit';
 import noPhoto from '@assets/no-photo.png';
 import battery from '@assets/Battery_low.svg';
-import wallet from '@assets/wallet.png';
+import wallet from '@assets/wallet.svg';
 import {StatusItem} from "@services/types";
 import {getCachedImage} from '@context/IndexDB';
 import {RentModal} from './components/RentModal/RentModal';

@@ -24,8 +24,11 @@ $block: '.user';
     }
 
     #{$block}__btn {
+        display: flex;
+        align-items: center;
         font-size: 30px;
         margin-top: 50px;
+        line-height: 1;
     }
 
 }

@@ -17,6 +17,12 @@ $block: '.table-users';
         width: 100%;
         background-color: rgb(200, 200, 200);
 
+        display: grid;
+        grid-template-columns: 20% repeat(3, 1fr);
+
+        // .grid-table {
+        // }
+
         div {
             justify-self: center;
             align-self: center;
@@ -33,8 +39,4 @@ $block: '.table-users';
         opacity: 1;
     }
 
-    .grid-table {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-    }
 }

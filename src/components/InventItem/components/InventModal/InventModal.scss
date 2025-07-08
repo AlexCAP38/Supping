@@ -41,45 +41,50 @@ $block: '.modal';
         .invent-number {
             background-color: $color-blue;
             min-width: 110px;
-            height: 50px;
+            height: 45px;
             display: flex;
-            align-items: flex-end;
+            align-items: end;
             padding-left: 10px;
-            padding-bottom: 15px;
+            padding-bottom: 8px;
             box-sizing: border-box;
 
             .first {
                 font-size: 36px;
+                align-self: end;
                 letter-spacing: -1px;
+                padding-bottom: 5px;
                 color: $color-black;
             }
 
             .second {
                 color: $color-black;
                 font-size: 20px;
-                line-height: 10px;
-                margin-left: 2px;
+                line-height: 1;
+                margin-left: 5px;
                 letter-spacing: 1px;
             }
         }
     }
 
-     #{$block}__section-image {
+    #{$block}__section-image {
         display: flex;
         justify-content: center;
         align-items: center;
         width: 100%;
-        height: 210px;
+        height: 150px;
         overflow: hidden;
 
         .image {
             width: 100%;
-            height: 100%;
-            object-fit: fill;
+            max-height: 150px;
+            object-fit:contain;
         }
     }
+    #{$block}__section-image_background {
+        background-color: white;
+    }
 
-     #{$block}__section-time {
+    #{$block}__section-time {
         display: flex;
         justify-content: center;
         align-items: center;
@@ -116,7 +121,7 @@ $block: '.modal';
 
 
     #{$block}__section-money {
-        padding: 0 40px;
+        padding: 0 30px;
         margin-top: 20px;
         display: flex;
         // align-items: baseline;

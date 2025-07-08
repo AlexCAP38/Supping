@@ -5,6 +5,8 @@ import {Checkbox, Icon} from '@gravity-ui/uikit';
 import {ApiItemResponse} from '@services/supping-api';
 import {CircleXmark} from "@gravity-ui/icons";
 import {api} from '@services/api';
+import image from '@assets/ok.svg';
+import noImage from '@assets/notok.svg';
 
 const b = block('inventory-item');
 
@@ -70,7 +72,12 @@ export function ItemInventors({className, item, itemCurrent, showModalInventors,
       <div className={b("type")}>{item.type?.name}</div>
       <div className={b("name")}>{item.description}</div>
       <div className={b("foto")}>
-        <img src={item.image} alt="фото инвентаря" />
+        {
+          item.image ?
+            <img src={image} alt="фото инвентаря" />
+            :
+            <img src={noImage} alt="фото инвентаря не загрузилось" />
+        }
       </div>
       <div className={b("invent-number")}>{item.name}</div>
       <div className={b("battery")}>{item.lowEnergy ? 'заменить' : 'норм'}</div>

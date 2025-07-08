@@ -6,7 +6,9 @@ import clock from '@assets/clock.svg'
 import {clearInputValue} from '@utils/ClearInputNumber';
 import {api} from '@services/api';
 import React, {FC, useContext, useEffect, useState} from 'react';
-import wallet from '@assets/wallet.png';
+import wallet from '@assets/wallet.svg';
+import preCostImg from '@assets/prepaid.svg';
+import preCostImgRed from '@assets/prepaid-red.svg';
 import {AppContext} from '@context/Context';
 import {ApiRentResponse} from '@services/supping-api';
 
@@ -30,19 +32,18 @@ export const RentModal: FC<RentModalProps> = ({showModal, setShowModal, idRentIt
     const [item, setItem] = useState<ApiRentResponse | undefined>(undefined)
 
     const [startRent, setStartRent] = useState<Time>(initTime);
-    const [endRent, setEndRent] = useState<Time>(initTime);;
+    const [endRent, setEndRent] = useState<Time>(initTime);
+    const [blockInputEndTimeRent, setBlockInputEndTime] = useState(false);
 
     const [inputDescription, setInputDescription] = useState('');
     const [inputGetMoney, setInputGetMoney] = useState('');
 
-    const [isLoad, setIsLoad] = useState(false);
-
+    //Инвентарь в аренде, имеет статус ACTIVE
     const itemStatus = item?.status === 'ACTIVE' ? true : false;
 
     //Получение информации об аренде
     useEffect(() => {
         //ДОБАВИТЬ ЛОАДЕР
-
         api.v1.getRentItem(idRentItem)
             .then((response) => {
                 const item = response.data;
@@ -71,8 +72,9 @@ export const RentModal: FC<RentModalProps> = ({showModal, setShowModal, idRentIt
                 minute: new Date().getMinutes().toString().padStart(2, '0')
             });
 
-            setInputGetMoney(item?.rentCost?.toString() || '')
+            setInputGetMoney(item?.totalRentCost?.toString() || '')
             setInputDescription(item?.description || '')
+            setBlockInputEndTime(item?.status === 'PAID' || item?.status === 'WAIT_PAYMENT')
         }
 
     }, [item])
@@ -81,11 +83,10 @@ export const RentModal: FC<RentModalProps> = ({showModal, setShowModal, idRentIt
         event.stopPropagation();
         if (!item?.id) return;
 
-        setIsLoad(true)
         api.v1.paymentRent(item.id,
             {
                 description: inputDescription,
-                paid: parseFloat(inputGetMoney)
+                paid: parseFloat(inputGetMoney),
             })
             .then((response) => {
                 setState({
@@ -94,7 +95,6 @@ export const RentModal: FC<RentModalProps> = ({showModal, setShowModal, idRentIt
                         reloadPage: true
                     }
                 })
-                setIsLoad(false)
                 setShowModal(false);
             })
             .catch((error) => {
@@ -113,7 +113,14 @@ export const RentModal: FC<RentModalProps> = ({showModal, setShowModal, idRentIt
 
         api.v1.stopRent(item.id, {endTime: stopTime.toISOString()})
             .then((response) => {
-                setItem(response.data)
+                setItem(response.data);
+                setState({
+                    options: {
+                        ...state.options,
+                        reloadPage: true
+                    }
+                })
+                setShowModal(false);
             })
             .catch((error) => {
                 //TODO сделать нормальное предупреждение об ошибке
@@ -144,95 +151,107 @@ export const RentModal: FC<RentModalProps> = ({showModal, setShowModal, idRentIt
     }
 
     return (
-        <Modal
-            open={showModal}
-            onClose={(event) => handleClose(event)}
-            style={{
-                backgroundColor: 'rgba(20,20,20, 0.15)',
-            }}
-        >
-            <div className={b('modal-container')}>
+        !item ? (
+            null
+        ) : (
+            <Modal
+                open={showModal}
+                onClose={(event) => handleClose(event)}
+                style={{
+                    backgroundColor: 'rgba(20,20,20, 0.15)',
+                }}
+            >
+                <div className={b('modal-container')}>
 
-                <div className="section-title">
-                    <Text className={'title'}>{item?.item?.description}</Text>
-                    <div className={'invent-number'}>
-                        <span className="first-letters">{item?.item?.name?.slice(0, 2)}</span>
-                        <span className="second-letters">{item?.item?.name?.slice(2, -1)}</span>
+                    <div className="section-title">
+                        <Text className={'title'}>{item?.item?.description}</Text>
+                        <div className={'invent-number'}>
+                            <span className="first-letters">{item?.item?.name?.slice(0, 2)}</span>
+                            <span className="second-letters">{item?.item?.name?.slice(2, -1)}</span>
+                        </div>
                     </div>
-                </div>
 
-                <div className="section-time">
-                    <img src={clock} className={'icon'} alt="Время старта аренды" />
-                    <p className={'start-time'}>{startRent?.hour}</p>
-                    <p className={'separator'}>:</p>
-                    <p className={'start-time'}>{startRent?.minute}</p>
-                    <div className="minus-separator"></div>
-                    <input
-                        disabled={item?.status === 'PAID' || item?.status === 'WAIT_PAYMENT'}
-                        value={endRent?.hour || ''}
-                        className={'input-time'}
-                        onChange={(event) => {
-                            const value: number = parseInt(event.target.value)
-                            if (value >= 0 && value < 24 || !value) {
-                                setEndRent(prevState => ({
-                                    ...prevState,
-                                    hour: value.toString().padStart(2, '0')
-                                }))
-                            }
-                        }}
-                    />
-                    <p className={'separator'}>:</p>
-                    <input
-                        disabled={item?.status === 'PAID' || item?.status === 'WAIT_PAYMENT'}
-                        value={endRent?.minute}
-                        className={'input-time'}
-                        onChange={(event) => {
-                            const value: number = parseInt(event.target.value)
-                            if (value >= 0 && value < 60 || !value) {
-                                setEndRent(prevState => ({
-                                    ...prevState,
-                                    minute: value.toString().padStart(2, '0')
-                                }))
-                            }
-                        }}
-                    />
-                </div>
-
-                <div className={b("section-money")}>
-                    <div className={b('precost', {visible: !item?.preRentCost})}>{`Предоплата: ${item?.preRentCost} руб`}</div>
-                    <div className={b('rentcost')}>
-                        <img className={b('icon-wallet')} src={wallet} />
-                        <TextInput className={b('input-money', {bgcolor: itemStatus})}
-                            view='clear'
-                            size="xl"
-                            value={inputGetMoney.toString()}
-                            onUpdate={(value) => setInputGetMoney(clearInputValue(value))}
-                            disabled={itemStatus}
+                    <div className="section-time">
+                        <img src={clock} className={'icon'} alt="Время старта аренды" />
+                        <p className={'start-time'}>{startRent?.hour}</p>
+                        <p className={'separator'}>:</p>
+                        <p className={'start-time'}>{startRent?.minute}</p>
+                        <div className="minus-separator"></div>
+                        <input
+                            inputMode='numeric'
+                            type='text'
+                            disabled={blockInputEndTimeRent}
+                            value={endRent?.hour || ''}
+                            className={b('input-time', {border: blockInputEndTimeRent})}
+                            onChange={(event) => {
+                                const value: number = parseInt(event.target.value)
+                                if ((value >= 0 && value < 24) || !value) {
+                                    setEndRent(prevState => ({
+                                        ...prevState,
+                                        hour: value.toString().padStart(2, '0')
+                                    }))
+                                }
+                            }}
+                        />
+                        <p className={'separator'}>:</p>
+                        <input
+                            inputMode='numeric'
+                            type='text'
+                            disabled={blockInputEndTimeRent}
+                            value={endRent?.minute}
+                            className={b('input-time', {border: blockInputEndTimeRent})}
+                            onChange={(event) => {
+                                const value: number = parseInt(event.target.value)
+                                if ((value >= 0 && value < 60) || !value) {
+                                    setEndRent(prevState => ({
+                                        ...prevState,
+                                        minute: value.toString().padStart(2, '0')
+                                    }))
+                                }
+                            }}
                         />
                     </div>
-                </div>
 
-                <TextArea className={b('comment')}
-                    view='clear'
-                    minRows={3}
-                    maxRows={3}
-                    placeholder={'Комментарий'}
-                    size="xl"
-                    value={inputDescription}
-                    onUpdate={(value) => setInputDescription(value)}
-                    disabled={itemStatus}
-                />
-                {
-                    item?.status === 'ACTIVE' ?
-                        <div className="btn" onClick={(event) => handleStopPay(event)}>
-                            Остановить аренду
+                    <div className={b("section-money")}>
+                        <div className={b('precost')}>
+                            <img className={b('icon-wallet')} src={item?.preRentCost ? preCostImgRed : preCostImg} />
+                            <p className={b('content', {color: Boolean(item?.preRentCost)})}>{item?.preRentCost || 0}</p>
                         </div>
-                        :
-                        <div className="btn" onClick={(event) => handlePay(event)}>
-                            {item?.status === 'PAID' ? 'Обновить' : 'Оплатить'}
+                        <div className={b('rentcost')}>
+                            <img className={b('icon-wallet')} src={wallet} />
+                            <input className={b('input-money', {bgcolor: itemStatus})}
+                                inputMode='numeric'
+                                type='text'
+                                value={inputGetMoney.toString()}
+                                onChange={(event) => setInputGetMoney(clearInputValue(event.target.value))}
+                                disabled={itemStatus}
+                            />
                         </div>
-                }
-            </div>
-        </Modal>
+                    </div>
+                    {
+                        itemStatus ?
+                            <div className={b("btn", {margin: true})} onClick={(event) => handleStopPay(event)}>
+                                Остановить аренду
+                            </div>
+                            :
+                            <>
+                                <TextArea className={b('comment')}
+                                    view='clear'
+                                    minRows={2}
+                                    maxRows={2}
+                                    placeholder={'Комментарий'}
+                                    size="xl"
+                                    value={inputDescription}
+                                    onUpdate={(value) => setInputDescription(value)}
+                                    disabled={itemStatus}
+                                />
+                                <div className={b("btn")} onClick={(event) => handlePay(event)}>
+                                    {item?.status === 'PAID' ? 'Обновить' : 'Оплачено'}
+                                </div>
+                            </>
+                    }
+                </div>
+            </Modal>
+        )
     )
 }

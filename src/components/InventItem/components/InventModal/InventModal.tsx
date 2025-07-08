@@ -135,7 +135,7 @@ export const InventModal: FC<InventModalProps> = ({item, showModal, setShowModal
                 </div>
             </div>
 
-            <div className={b('section-image')}>
+            <div className={b('section-image',{background:!!image})}>
                 {
                     image ?
                         <img src={image} className={'image'} />
@@ -149,6 +149,8 @@ export const InventModal: FC<InventModalProps> = ({item, showModal, setShowModal
             <div className={b("section-time")}>
                 <img src={clock} className={'icon'} alt="Время старта аренды" />
                 <input
+                    inputMode='numeric'
+                    type='text'
                     value={hours}
                     className={'time'}
                     onChange={(event) => {
@@ -162,6 +164,8 @@ export const InventModal: FC<InventModalProps> = ({item, showModal, setShowModal
                 />
                 <p className={'separator'}>:</p>
                 <input
+                    inputMode='numeric'
+                    type='text'
                     value={minutes}
                     className={'time'}
                     onChange={(event) => {
