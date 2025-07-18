@@ -10,6 +10,7 @@ $block: '.rent-item';
         display: flex;
         justify-content: space-between;
         gap: 5px;
+        position: relative;
 
         #{$block}__section-info {
             display: flex;
@@ -130,6 +131,47 @@ $block: '.rent-item';
             }
         }
     }
+
+    #{$block}__section-delete {
+        position: absolute;
+        height: 100%;
+        right: 0;
+        background-color: #fff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 10px 0 0 10px;
+        overflow: hidden;
+        width: 0;
+    transition: width 0.5s linear;
+
+        #{$block}__icon-delete {
+            width: 50px;
+            height: 50px;
+        }
+    }
+
+    #{$block}__section-delete_show {
+    width: 106px;
+        // animation: show_trash 0.5s forwards linear;
+    }
+
+    #{$block}__section-delete_unshow {
+    width: 0;
+        // animation: show_trash 0.5s forwards linear reverse;
+    }
+
+
+    @keyframes show_trash {
+        from {}
+
+        to {
+            width: 105px;
+            visibility: visible;
+        }
+    }
+
+
 
     #{$block}__section-description {
         display: flex;

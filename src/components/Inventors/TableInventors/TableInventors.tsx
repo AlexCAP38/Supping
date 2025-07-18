@@ -66,7 +66,7 @@ export function TableInventors() {
                     setShowModalStock(true);
                 }}
             >
-                Добавить новую инвентарь
+                Добавить новый инвентарь
             </Button>
             <ModalInventors
                 showModal={showModalStock}

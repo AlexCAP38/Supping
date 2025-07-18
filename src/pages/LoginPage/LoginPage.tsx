@@ -85,9 +85,7 @@ export function LoginPage() {
 
     return (
         <div className={b()}>
-            <div className={b('logo')}>
-                <img src={logo} alt="logo" />
-            </div>
+            <img className={b('logo')} src={logo} alt="logo" />
             <div className={b('label')}>Логин</div>
             <TextInput
                 className={b('input')}
@@ -109,7 +107,7 @@ export function LoginPage() {
                     />
                 </div>
             </div>
-            <div className={b('container')}>
+            <div className={b('section-options')}>
                 <Checkbox
                     size='l'
                     onChange={() => setRememberMe(prevState => !prevState)}

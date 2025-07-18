@@ -1,15 +1,19 @@
 import './RentItem.scss';
 import block from 'bem-cn-lite';
-import React, {FC, useContext, useEffect, useState} from "react";
-import {Text} from '@gravity-ui/uikit';
+import React, {FC, useContext, useEffect, useRef, useState} from "react";
+import {Text, useToaster} from '@gravity-ui/uikit';
 import noPhoto from '@assets/no-photo.png';
 import battery from '@assets/Battery_low.svg';
 import wallet from '@assets/wallet.svg';
+import trash from '@assets/trash.svg';
 import {StatusItem} from "@services/types";
 import {getCachedImage} from '@context/IndexDB';
 import {RentModal} from './components/RentModal/RentModal';
 import {AppContext} from '@context/Context';
 import {ApiRentResponse} from '@services/supping-api';
+import {useSwipeable} from 'react-swipeable';
+import {api} from '@services/api';
+import {toastError, toastSuccess} from '@utils/toast';
 
 const b = block('rent-item');
 
@@ -34,6 +38,10 @@ export const RentItem: FC<RentItemProps> = ({rentItem}) => {
         image: imageItem = ''} = item;
     const {auto = false} = type; //метка есть ли датчик у инвентаря
     const [showModal, setShowModal] = useState(false);
+    const [showAnimationTrash, setShowAnimationTrash] = useState(false);
+    const timeoutRef = useRef<number | null>(null);
+    const {add, update} = useToaster();
+
 
     const [visibilityBlockDescription, setVisibilityBlockDescription] = useState(true);
     const [image, setImage] = useState<string>(noPhoto);
@@ -94,6 +102,40 @@ export const RentItem: FC<RentItemProps> = ({rentItem}) => {
 
     }
 
+
+    const handlers = useSwipeable({
+        onSwipedLeft: (eventData) => {
+
+            setShowAnimationTrash(true);
+
+            //если таймаут есть удаляем его
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+            }
+
+            // записываем в реф
+            timeoutRef.current = setTimeout(() => {
+                setShowAnimationTrash(false);
+                timeoutRef.current = null;
+            }, 3000);
+
+        }
+    });
+
+    function handleDeleteRent(event: React.MouseEvent) {
+        event.stopPropagation();
+
+        rentItem.id && api.v1.errorRent(rentItem.id)
+            .then((response) => {
+                toastSuccess('Аренда удалена и помечена как ошибочная')
+                setShowAnimationTrash(false);
+            })
+            .catch((error) => {
+                toastError(`Ошибка: ${error.message}`)
+            }
+            )
+    }
+
     return (
         <div className={b()}>
             <div
@@ -113,7 +155,9 @@ export const RentItem: FC<RentItemProps> = ({rentItem}) => {
                     </div>
                 </div>
 
-                <div className={b('section-price', `${checkStatus(status)} `)}>
+                <div
+                    {...handlers} // Свайп
+                    className={b('section-price', `${checkStatus(status)} `)}>
                     <Text className={b('id-item')}>
                         <div className='number'>
                             <span className="first">{item?.name?.slice(0, 2)}</span>
@@ -129,8 +173,14 @@ export const RentItem: FC<RentItemProps> = ({rentItem}) => {
                     </div>
                     <img className={b('battery', {show: lowEnergy && !!auto})} src={battery} />
                 </div>
-            </div>
 
+                <div
+                    onClick={(event) => handleDeleteRent(event)}
+                    className={b('section-delete', {show: showAnimationTrash})}>
+                    <img className={b('icon-delete')} src={trash} />
+                </div>
+
+            </div>
             <div className={b('section-description', {hidden: visibilityBlockDescription})}>
                 {description}
             </div>

@@ -6,3 +6,10 @@ $block: '.main-page';
     margin: auto;
     --g-text-body-font-family: 'Bebas', sans-serif;
 }
+
+#{$block}__toaster {
+    bottom: 10%;
+    left: 50%;
+    transform: translate(-50%, -10%);
+    ;
+}

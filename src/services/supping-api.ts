@@ -24,40 +24,6 @@ export interface ApiUpdateUserRequest {
   lastName?: string;
 }
 
-export interface ApiUserResponse {
-  /**
-   * Идентификатор
-   * @format uuid
-   */
-  id?: string;
-  /**
-   * Имя
-   * @min 3
-   * @max 50
-   */
-  firstName?: string;
-  /**
-   * Фамилия
-   * @min 3
-   * @max 50
-   */
-  lastName?: string;
-  /**
-   * Логин
-   * @min 3
-   * @max 50
-   */
-  login?: string;
-  /** Активный */
-  active?: boolean;
-  /**
-   * Сумма заработанная за день
-   * @format double
-   * @min 1
-   */
-  totalValue?: number;
-}
-
 export interface AppException {
   cause?: {
     stackTrace?: {
@@ -111,6 +77,40 @@ export interface AppException {
     localizedMessage?: string;
   }[];
   localizedMessage?: string;
+}
+
+export interface ApiUserResponse {
+  /**
+   * Идентификатор
+   * @format uuid
+   */
+  id?: string;
+  /**
+   * Имя
+   * @min 3
+   * @max 50
+   */
+  firstName?: string;
+  /**
+   * Фамилия
+   * @min 3
+   * @max 50
+   */
+  lastName?: string;
+  /**
+   * Логин
+   * @min 3
+   * @max 50
+   */
+  login?: string;
+  /** Активный */
+  active?: boolean;
+  /**
+   * Сумма заработанная за день
+   * @format double
+   * @min 1
+   */
+  totalValue?: number;
 }
 
 /** Тип инвентаря */
@@ -305,6 +305,12 @@ export interface ApiRentResponse {
    * @format date-time
    */
   endTime?: string;
+  /**
+   * Цена с учетом скидки
+   * @format double
+   * @min 1
+   */
+  actualPrice?: number;
   /**
    * Время аренды в минутах
    * @format int64
@@ -606,11 +612,11 @@ export interface PageApiRentResponse {
   /** @format int32 */
   number?: number;
   sort?: SortObject[];
-  first?: boolean;
-  last?: boolean;
   /** @format int32 */
   numberOfElements?: number;
   pageable?: PageableObject;
+  first?: boolean;
+  last?: boolean;
   empty?: boolean;
 }
 
@@ -618,12 +624,12 @@ export interface PageableObject {
   /** @format int64 */
   offset?: number;
   sort?: SortObject[];
-  paged?: boolean;
-  unpaged?: boolean;
-  /** @format int32 */
-  pageSize?: number;
   /** @format int32 */
   pageNumber?: number;
+  /** @format int32 */
+  pageSize?: number;
+  paged?: boolean;
+  unpaged?: boolean;
 }
 
 export interface SortObject {
@@ -715,6 +721,11 @@ export interface ApiAuthRequest {
    * @max 256
    */
   password: string;
+}
+
+export interface ApiAuthResponse {
+  /** Token */
+  token?: string;
 }
 
 export interface ApiChangePasswordRequest {
@@ -998,12 +1009,12 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @tags Записи аренды
      * @name PreRent
      * @summary Предварительная аренда
-     * @request PUT:/v1/rents/{itemId}/preRent
+     * @request PUT:/v1/rents/{itemId}/pre-rent
      * @secure
      */
     preRent: (itemId: string, data: ApiPreRentRequest, params: RequestParams = {}) =>
       this.request<ApiRentResponse, AppException>({
-        path: `/v1/rents/${itemId}/preRent`,
+        path: `/v1/rents/${itemId}/pre-rent`,
         method: "PUT",
         body: data,
         secure: true,
@@ -1223,7 +1234,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags Account
      * @name UpdateAccount
-     * @summary Update account
+     * @summary Обновить учетную запись
      * @request PUT:/v1/account/update
      * @secure
      */
@@ -1264,12 +1275,12 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @tags Пользователи
      * @name SetActiveUser
      * @summary Сделать пользователя активным
-     * @request POST:/v1/users/assignYourself
+     * @request POST:/v1/users/assign-yourself
      * @secure
      */
     setActiveUser: (params: RequestParams = {}) =>
       this.request<ApiUserResponse, AppException>({
-        path: `/v1/users/assignYourself`,
+        path: `/v1/users/assign-yourself`,
         method: "POST",
         secure: true,
         format: "json",
@@ -1332,6 +1343,42 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         body: data,
         secure: true,
         type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Settings
+     * @name SetAutoOn
+     * @summary Включить автоматический режим
+     * @request POST:/v1/settings/auto-mode/on
+     * @secure
+     */
+    setAutoOn: (params: RequestParams = {}) =>
+      this.request<boolean, AppException>({
+        path: `/v1/settings/auto-mode/on`,
+        method: "POST",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Settings
+     * @name SetAutoOff
+     * @summary Выключить автоматический режим
+     * @request POST:/v1/settings/auto-mode/off
+     * @secure
+     */
+    setAutoOff: (params: RequestParams = {}) =>
+      this.request<boolean, AppException>({
+        path: `/v1/settings/auto-mode/off`,
+        method: "POST",
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -1504,13 +1551,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags Account
      * @name ResetPassword
-     * @summary Account reset password
-     * @request POST:/v1/account/resetPassword
+     * @summary Сброс пароля учетной записи
+     * @request POST:/v1/account/reset-password
      * @secure
      */
     resetPassword: (data: ApiResetPasswordRequest, params: RequestParams = {}) =>
       this.request<ApiAccountResponse, AppException>({
-        path: `/v1/account/resetPassword`,
+        path: `/v1/account/reset-password`,
         method: "POST",
         body: data,
         secure: true,
@@ -1528,7 +1575,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @secure
      */
     login: (data: ApiAuthRequest, params: RequestParams = {}) =>
-      this.request<string, any>({
+      this.request<ApiAuthResponse, any>({
         path: `/v1/account/login`,
         method: "POST",
         body: data,
@@ -1542,17 +1589,35 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags Account
      * @name ChangePassword
-     * @summary Account change password
-     * @request POST:/v1/account/changePassword
+     * @summary Смена пароля учетной записи
+     * @request POST:/v1/account/change-password
      * @secure
      */
     changePassword: (data: ApiChangePasswordRequest, params: RequestParams = {}) =>
       this.request<ApiAccountResponse, AppException>({
-        path: `/v1/account/changePassword`,
+        path: `/v1/account/change-password`,
         method: "POST",
         body: data,
         secure: true,
         type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Settings
+     * @name GetAutoMode
+     * @summary Статус автоматического режима
+     * @request GET:/v1/settings/auto-mode
+     * @secure
+     */
+    getAutoMode: (params: RequestParams = {}) =>
+      this.request<boolean, AppException>({
+        path: `/v1/settings/auto-mode`,
+        method: "GET",
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -1612,7 +1677,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags Account
      * @name InfoAccount
-     * @summary Account info
+     * @summary Получить информацию учетной записи
      * @request GET:/v1/account/info
      * @secure
      */

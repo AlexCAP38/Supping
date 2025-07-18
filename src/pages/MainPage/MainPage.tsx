@@ -11,6 +11,8 @@ import {cacheImage, dbPromise} from '@context/IndexDB'
 import {ApiActiveUserResponse, ApiRentResponse} from '@services/supping-api';
 import {User} from '@services/types';
 import {tokenStorage} from '@utils/tokenStorage';
+import {ToasterComponent} from '@gravity-ui/uikit';
+import {toastError, toastInfo} from '@utils/toast';
 
 const b = block('main-page');
 
@@ -58,13 +60,14 @@ export function MainPage() {
         items.forEach((item) => item?.item?.image && cacheImage(item.item.image))
       })
       .catch((error) => {
-        // TODO: добавить обработку ошибок (например, модальное окно)
         if (error.status === 401 || error.status === 403) {
+
+          toastError(`Ошибка авторизации ${error.status}`)
           //Удаляем все токены, они не валидные
           tokenStorage.clear();
           navigate('/login')
         }
-        console.log('Не удалось получить данные');
+        toastError(`Ошибка: ${error.message}`)
       });
   };
 
@@ -87,6 +90,7 @@ export function MainPage() {
         null
         :
         <>
+          <ToasterComponent className={b('toaster')} />
           <Header />
           {showLoader
             ? <Loader />
